@@ -46,11 +46,33 @@ module.exports = {
         if (command === 'debug') {
             if (message.author.id !== message.guild.ownerId) return message.reply("Apenas o dono do servidor pode ver o debug.");
             const key = process.env.GEMINI_API_KEY || "";
+            const cleanKey = key.replace(/['"]/g, '').trim();
             const hasDots = key.includes(".");
             const startStr = key.substring(0, 4);
             const length = key.length;
             
-            return message.reply(`🔧 **Diagnóstico da GEMINI_API_KEY lida pela Railway:**\n\n- Começa com: \`${startStr}***\` (Deveria ser 'AIza')\n- Possui pontos (.) na chave? **${hasDots ? 'SIM ❌ (Chaves do Google não tem pontos, Tokens do Discord têm!)' : 'NÃO ✅'}**\n- Tamanho da chave: **${length} caracteres** (Normal é 39)\n\nSe a resposta acima acusou erros, você colou o Token errado no painel da Railway!`);
+            let diagMsg = `🔧 **Diagnóstico da GEMINI_API_KEY lida pela Railway:**\n\n- Começa com: \`${startStr}***\` (Deveria ser 'AIza' ou 'AQ.')\n- Possui pontos (.) na chave? **${hasDots ? 'SIM' : 'NÃO'}**\n- Tamanho da chave: **${length} caracteres**\n\n`;
+
+            try {
+                diagMsg += `⏳ Consultando os servidores do Google para ver quais modelos essa chave tem acesso...\n`;
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
+                if (!response.ok) {
+                    const errText = await response.text();
+                    diagMsg += `❌ O Google rejeitou listar os modelos. Erro: ${response.status} - ${errText.substring(0, 500)}`;
+                } else {
+                    const data = await response.json();
+                    if (data.models && data.models.length > 0) {
+                        const modelNames = data.models.map(m => m.name).slice(0, 10).join("\n- ");
+                        diagMsg += `✅ SUCESSO! A chave é válida. O Google diz que você pode usar os seguintes modelos:\n- ${modelNames}\n(Mostrando os 10 primeiros)`;
+                    } else {
+                        diagMsg += `⚠️ A chave é válida, mas o Google diz que não há NENHUM modelo disponível para essa conta!`;
+                    }
+                }
+            } catch (err) {
+                diagMsg += `❌ Erro de conexão com o Google: ${err.message}`;
+            }
+            
+            return message.reply(diagMsg);
         }
 
         // Comandos Fixos
