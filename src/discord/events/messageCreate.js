@@ -42,6 +42,17 @@ module.exports = {
             return message.reply("Como posso ajudar? Digite `.phantomhelp` para ver as opções ou me peça o que quiser.");
         }
 
+        // Comando secreto de diagnóstico para descobrir o que tem na API Key do cara
+        if (command === 'debug') {
+            if (message.author.id !== message.guild.ownerId) return message.reply("Apenas o dono do servidor pode ver o debug.");
+            const key = process.env.GEMINI_API_KEY || "";
+            const hasDots = key.includes(".");
+            const startStr = key.substring(0, 4);
+            const length = key.length;
+            
+            return message.reply(`🔧 **Diagnóstico da GEMINI_API_KEY lida pela Railway:**\n\n- Começa com: \`${startStr}***\` (Deveria ser 'AIza')\n- Possui pontos (.) na chave? **${hasDots ? 'SIM ❌ (Chaves do Google não tem pontos, Tokens do Discord têm!)' : 'NÃO ✅'}**\n- Tamanho da chave: **${length} caracteres** (Normal é 39)\n\nSe a resposta acima acusou erros, você colou o Token errado no painel da Railway!`);
+        }
+
         // Comandos Fixos
         if (command === 'status') {
             return message.reply("✅ Status: Operacional\n🧠 IA: Google Gemini 2.5 Pro\n🗄️ Database: SQLite Online");
