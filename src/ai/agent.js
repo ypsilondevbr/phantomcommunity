@@ -18,9 +18,9 @@ async function handleAICommand(message, userQuery) {
         const guildId = message.guild.id;
         const userId = message.author.id;
         
-        // Usar gemini-2.5-pro para maior capacidade cognitiva de estruturação
+        // Usar gemini-1.5-pro para maior estabilidade e compatibilidade
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.5-pro",
+            model: "gemini-1.5-pro",
             systemInstruction: "Você é o Phantom Community AI, um administrador autônomo de Discord. Você pode planejar estruturas e gerenciar o servidor. Seja direto e objetivo. Sempre estruture suas respostas de forma limpa." 
         });
 
