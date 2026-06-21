@@ -38,9 +38,23 @@ module.exports = {
         if (command === 'timeout') return timeoutCommand.execute(message, args);
         if (command === 'warn') return warnCommand.execute(message, args);
         if (command === 'userinfo') return userinfoCommand.execute(message, args);
+        
+        // Novos comandos
+        if (command === 'history') {
+            const historyCommand = require('../commands/admin/history');
+            return historyCommand.execute(message, args, client);
+        }
+        if (command === 'role') {
+            const roleCommand = require('../commands/admin/role');
+            return roleCommand.execute(message, args);
+        }
+        if (command === 'channel') {
+            const channelCommand = require('../commands/admin/channel');
+            return channelCommand.execute(message, args);
+        }
 
-        // TODO: Outros comandos fixos como role, channel, setup, tickets, etc.
-        const pendingCommands = ['role', 'channel', 'category', 'setup', 'tickets', 'welcome', 'logs', 'backup', 'security', 'lockdown'];
+        // Comandos que ainda serão implementados e usarão sistemas / setups massivos
+        const pendingCommands = ['category', 'setup', 'tickets', 'welcome', 'logs', 'backup', 'security', 'lockdown'];
         if (pendingCommands.includes(command)) {
             return message.reply(`⚠️ O comando fixo \`.phantom ${command}\` está em fase de construção.`);
         }
