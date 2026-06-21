@@ -1,0 +1,20 @@
+{
+  "name": "phantom-community",
+  "version": "1.0.0",
+  "description": "Phantom Community AI - Agente Administrativo Autônomo para o Discord",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "better-sqlite3": "^11.6.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
