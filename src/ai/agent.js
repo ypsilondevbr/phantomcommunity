@@ -15,7 +15,7 @@ async function handleAICommand(message, userQuery) {
         const userId = message.author.id;
 
         // Bypass do SDK oficial: Fazer requisição manual via fetch para evitar o bug de chaves "AQ." com pontos
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${cleanKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${cleanKey}`;
         
         const payload = {
             systemInstruction: {
