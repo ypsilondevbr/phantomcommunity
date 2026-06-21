@@ -1,33 +1,51 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { logAI } = require('../core/logger');
-
-// Inicializa a IA na primeira requisição, evitando crashe se a KEY estiver ausente no boot
-let genAI;
 
 async function handleAICommand(message, userQuery) {
     const statusMsg = await message.reply("🧠 Analisando sua solicitação com o Google Gemini...");
 
     try {
-        if (!genAI) {
-            if (!process.env.GEMINI_API_KEY) {
-                throw new Error("GEMINI_API_KEY_MISSING");
-            }
-            // Remove possíveis aspas duplas, aspas simples e espaços vazios que a pessoa possa ter colado sem querer
-            const cleanKey = process.env.GEMINI_API_KEY.replace(/['"]/g, '').trim();
-            genAI = new GoogleGenerativeAI(cleanKey);
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error("GEMINI_API_KEY_MISSING");
         }
+
+        // Remove possíveis aspas e espaços
+        const cleanKey = process.env.GEMINI_API_KEY.replace(/['"]/g, '').trim();
+
         const guildId = message.guild.id;
         const userId = message.author.id;
+
+        // Bypass do SDK oficial: Fazer requisição manual via fetch para evitar o bug de chaves "AQ." com pontos
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${cleanKey}`;
         
-        // Usar gemini-1.5-pro para maior estabilidade e compatibilidade
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-1.5-pro",
-            systemInstruction: "Você é o Phantom Community AI, um administrador autônomo de Discord. Você pode planejar estruturas e gerenciar o servidor. Seja direto e objetivo. Sempre estruture suas respostas de forma limpa." 
+        const payload = {
+            systemInstruction: {
+                parts: [{ text: "Você é o Phantom Community AI, um administrador autônomo de Discord. Você pode planejar estruturas e gerenciar o servidor. Seja direto e objetivo. Sempre estruture suas respostas de forma limpa." }]
+            },
+            contents: [
+                { role: "user", parts: [{ text: userQuery }] }
+            ]
+        };
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
 
-        const chat = model.startChat({ history: [] });
-        const result = await chat.sendMessage(userQuery);
-        const replyContent = result.response.text();
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Google API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.candidates || data.candidates.length === 0) {
+            throw new Error("Resposta vazia da API do Gemini.");
+        }
+
+        const replyContent = data.candidates[0].content.parts[0].text;
 
         // Registrar no AI Decision Log
         logAI(guildId, userId, userQuery, replyContent, "Nenhuma ferramenta acionada ainda", "SUCESSO");
