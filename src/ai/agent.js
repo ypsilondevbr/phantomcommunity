@@ -8,11 +8,12 @@ async function handleAICommand(message, userQuery) {
     const statusMsg = await message.reply("🧠 Analisando sua solicitação com o Google Gemini...");
 
     try {
-        if (!genAI) {
             if (!process.env.GEMINI_API_KEY) {
                 throw new Error("GEMINI_API_KEY_MISSING");
             }
-            genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+            // Remove possíveis aspas duplas, aspas simples e espaços vazios que a pessoa possa ter colado sem querer
+            const cleanKey = process.env.GEMINI_API_KEY.replace(/['"]/g, '').trim();
+            genAI = new GoogleGenerativeAI(cleanKey);
         }
 
         const guildId = message.guild.id;
