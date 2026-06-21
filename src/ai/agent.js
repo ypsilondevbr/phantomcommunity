@@ -58,7 +58,7 @@ async function handleAICommand(message, userQuery) {
         
     } catch (error) {
         console.error("Gemini Error:", error);
-        let errorMsg = "❌ Erro ao conectar com o cérebro IA do Gemini.";
+        let errorMsg = `❌ Erro do Gemini:\n\`\`\`\n${error.message.substring(0, 1500)}\n\`\`\``;
         if (error.message === "GEMINI_API_KEY_MISSING") {
             errorMsg = "❌ A API Key do Gemini (GEMINI_API_KEY) não foi encontrada no arquivo .env.";
         }
