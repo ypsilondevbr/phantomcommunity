@@ -8,6 +8,7 @@ async function handleAICommand(message, userQuery) {
     const statusMsg = await message.reply("🧠 Analisando sua solicitação com o Google Gemini...");
 
     try {
+        if (!genAI) {
             if (!process.env.GEMINI_API_KEY) {
                 throw new Error("GEMINI_API_KEY_MISSING");
             }
@@ -15,7 +16,6 @@ async function handleAICommand(message, userQuery) {
             const cleanKey = process.env.GEMINI_API_KEY.replace(/['"]/g, '').trim();
             genAI = new GoogleGenerativeAI(cleanKey);
         }
-
         const guildId = message.guild.id;
         const userId = message.author.id;
         
