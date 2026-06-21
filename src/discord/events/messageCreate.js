@@ -13,7 +13,21 @@ module.exports = {
 
         // Central de Ajuda
         if (message.content === '.phantomhelp') {
-            return message.reply("🤖 **PHANTOM COMMUNITY AI**\nCentral de Ajuda:\n\nUse `.phantom [pedido]` para IA.\n\n🛡️ **Comandos Fixos:**\n`.phantom ban @usuario motivo`\n`.phantom kick @usuario motivo`\n`.phantom timeout @usuario tempo`\n`.phantom warn @usuario motivo`\n`.phantom userinfo @usuario`");
+            const { EmbedBuilder } = require('discord.js');
+            const helpEmbed = new EmbedBuilder()
+                .setColor('#2b2d31')
+                .setTitle('🤖 Central de Ajuda - Phantom Community')
+                .setDescription('O Phantom opera de forma híbrida: você pode usar comandos fixos e rápidos, ou pedir o que quiser para a Inteligência Artificial enviando `.phantom <seu pedido>`.')
+                .addFields(
+                    { name: '🧠 Inteligência Artificial', value: '`.phantom crie uma categoria chamada VIPs e dois canais dentro dela`\n`.phantom apague as mensagens deste canal`\n*(A IA entende linguagem natural e toma as ações por você)*' },
+                    { name: '🛡️ Moderação', value: '`.phantom ban @usuario [motivo]`\n`.phantom kick @usuario [motivo]`\n`.phantom timeout @usuario <10m/1h/1d> [motivo]`\n`.phantom warn @usuario <motivo>`\n`.phantom history @usuario` *(Vê histórico de punições)*' },
+                    { name: '⚙️ Gerenciamento', value: '`.phantom role create <nome>`\n`.phantom role delete @cargo`\n`.phantom channel create <nome>`\n`.phantom channel edit #canal <novo_nome>`' },
+                    { name: 'ℹ️ Informações', value: '`.phantom userinfo @usuario`\n`.phantom status`' }
+                )
+                .setFooter({ text: 'Desenvolvido para Phantom Community' })
+                .setTimestamp();
+
+            return message.reply({ embeds: [helpEmbed] });
         }
 
         const prefix = '.phantom';
