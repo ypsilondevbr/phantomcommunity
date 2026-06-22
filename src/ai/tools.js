@@ -123,7 +123,9 @@ async function executeTool(name, args, message) {
         }
         case "create_role": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
-            const role = await guild.roles.create({ name: args.name, color: args.color || null }).catch(()=>null);
+            let opts = { name: args.name };
+            if (args.color) opts.color = args.color;
+            const role = await guild.roles.create(opts).catch(err => { console.error(err); return null; });
             if (!role) return "❌ Falha ao criar cargo.";
             return `✅ Ação executada: Cargo '${role.name}' criado.`;
         }
