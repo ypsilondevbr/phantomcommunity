@@ -51,7 +51,17 @@ async function handleAICommand(message, userQuery) {
             
             await statusMsg.edit(`🛠️ A IA decidiu acionar a ferramenta: **${funcName}**... Executando...`);
             
-            const resultMsg = await executeTool(funcName, funcArgs, message);
+            let resultMsg;
+            try {
+                resultMsg = await executeTool(funcName, funcArgs, message);
+            } catch (toolError) {
+                console.error("Erro na ferramenta:", toolError);
+                if (toolError.message.includes("Missing Permissions") || toolError.message.includes("Privilege is too low")) {
+                    resultMsg = "❌ **O Discord bloqueou a ação!**\n\n**O problema:** O meu cargo (`Phantom Community`) está abaixo dos outros na hierarquia.\n**Como resolver:** Vá nas `Configurações do Servidor > Cargos` e **arraste o meu cargo lá pro topo**, senão eu não consigo dar cargos nem punir pessoas.";
+                } else {
+                    resultMsg = `❌ Falha ao tentar agir no Discord: \`${toolError.message}\``;
+                }
+            }
             
             logAI(guildId, userId, userQuery, `FunctionCall: ${funcName}`, `Acionou ferramenta ${funcName}`, "SUCESSO");
             return await statusMsg.edit(resultMsg);
