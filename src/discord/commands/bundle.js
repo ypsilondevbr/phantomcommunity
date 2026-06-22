@@ -195,7 +195,33 @@ const extraCommands = {
     gayrate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🏳️‍🌈 A taxa de viadagem de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
     simprate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🥺 A taxa de gado (simp) de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
     iq: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🧠 O QI de <@${u.id}> é **${Math.floor(Math.random() * 200) + 10}**!`); },
-    marry: (msg) => { const u = msg.mentions.users.first(); if(!u) return msg.reply("Mencione alguém!"); msg.reply(`💍 <@${msg.author.id}> pediu <@${u.id}> em casamento! Será que aceita?`); },
+    marry: async (msg) => { 
+        const u = msg.mentions.users.first(); 
+        if(!u) return msg.reply("Mencione alguém para casar!"); 
+        if(u.id === msg.author.id) return msg.reply("Você não pode casar consigo mesmo!");
+        
+        const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setCustomId('accept_marry').setLabel('Aceitar 💍').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId('deny_marry').setLabel('Recusar 💔').setStyle(ButtonStyle.Danger)
+        );
+
+        const m = await msg.reply({ content: `<@${u.id}>, você foi pedido em casamento por <@${msg.author.id}>! Você aceita?`, components: [row] });
+        
+        const collector = m.createMessageComponentCollector({ componentType: ComponentType.Button, time: 60000 });
+        collector.on('collect', async i => {
+            if (i.user.id !== u.id) return i.reply({ content: "Você não é a pessoa pedida em casamento!", ephemeral: true });
+            if (i.customId === 'accept_marry') {
+                await i.update({ content: `🎉 VIVA OS NOIVOS! <@${msg.author.id}> e <@${u.id}> estão oficialmente casados! 💍💖`, components: [] });
+            } else {
+                await i.update({ content: `💔 Que triste... <@${u.id}> recusou o pedido de casamento de <@${msg.author.id}>. Fique forte, soldado.`, components: [] });
+            }
+            collector.stop();
+        });
+        collector.on('end', collected => {
+            if (collected.size === 0) m.edit({ content: `O pedido de casamento de <@${msg.author.id}> expirou no vácuo... 🥀`, components: [] }).catch(()=>{});
+        });
+    },
     divorce: (msg) => { const u = msg.mentions.users.first(); if(!u) return msg.reply("Mencione alguém!"); msg.reply(`💔 <@${msg.author.id}> pediu o divórcio para <@${u.id}>. Acabou o amor...`); },
     ship: (msg, args) => { 
         const u = msg.mentions.users.first(); 
