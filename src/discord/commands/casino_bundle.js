@@ -342,48 +342,113 @@ const casino = {
     },
 
     // 5. Blackjack
+    // 5. High-Fidelity Blackjack
     blackjack: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
         removePoints(msg.author.id, bet);
         
-        let deck = getDeck();
-        let pHand = [deck.pop(), deck.pop()];
-        let dHand = [deck.pop(), deck.pop()];
-        const score = (h) => h.reduce((a,b)=>a+cardVal(b.r),0);
+        const deck = getDeck();
+        const pHand = [deck.pop(), deck.pop()];
+        const dHand = [deck.pop(), deck.pop()];
         
-        const render = (hidden=true) => `🃏 **Blackjack** | Aposta: **${bet}**\nSua Mão: ${pHand.map(c=>c.r+c.s).join(' ')} (Pontos: **${score(pHand)}**)\nMão da Banca: ${hidden ? dHand[0].r+dHand[0].s+' ❓' : dHand.map(c=>c.r+c.s).join(' ')} (Pontos: **${hidden ? cardVal(dHand[0].r) : score(dHand)}**)`;
+        const calcScore = (hand) => {
+            let score = 0; let aces = 0;
+            for(let c of hand) {
+                score += cardVal(c.r);
+                if(c.r === 'A') aces++;
+            }
+            while(score > 21 && aces > 0) { score -= 10; aces--; }
+            return score;
+        };
         
-        const row = new ActionRowBuilder().addComponents(createBtn('hit', 'Comprar 🃏', ButtonStyle.Primary), createBtn('stand', 'Parar 🛑', ButtonStyle.Danger));
-        const m = await msg.reply({ content: render(), components: [row] });
-        const col = m.createMessageComponentCollector({ filter: i=>i.user.id===msg.author.id, time: 30000 });
+        const renderCards = (hand, hideSecond = false) => {
+            let ui = "";
+            for(let i=0; i<hand.length; i++) {
+                if(hideSecond && i === 1) ui += "[ 🂠 ] ";
+                else ui += `[ ${hand[i].r}${hand[i].s} ] `;
+            }
+            return ui;
+        };
+        
+        const renderTable = (hideDealer = true, status = "Sua vez! 🃏") => {
+            const pScore = calcScore(pHand);
+            const dScore = hideDealer ? cardVal(dHand[0].r) : calcScore(dHand);
+            
+            let color = '#00BFFF';
+            if(!hideDealer) {
+                if(status.includes("Ganhou") || status.includes("Blackjack")) color = '#00FF00';
+                else if(status.includes("Empate")) color = '#FFFF00';
+                else color = '#FF0000';
+            }
+            
+            return new EmbedBuilder()
+                .setTitle("🃏 Phantom Blackjack (21)")
+                .setDescription(`**Mesa do Dealer:** (${hideDealer ? '?' : dScore})\n\`\`\`\n${renderCards(dHand, hideDealer)}\n\`\`\`\n**Sua Mão:** (${pScore})\n\`\`\`\n${renderCards(pHand)}\n\`\`\`\n**Status:** ${status}`)
+                .setColor(color)
+                .setFooter({text: `Aposta: ${bet} pts`});
+        };
+        
+        const row = new ActionRowBuilder().addComponents(
+            createBtn('hit', 'Comprar 🃏', ButtonStyle.Primary),
+            createBtn('stand', 'Parar 🛑', ButtonStyle.Danger)
+        );
+        
+        let pScore = calcScore(pHand);
+        if(pScore === 21) {
+            const win = Math.floor(bet * 2.5);
+            addPoints(msg.author.id, win);
+            return msg.reply({ embeds: [renderTable(false, `🎉 Blackjack Natural! Ganhou ${win} pts!`)] });
+        }
+        
+        const m = await msg.reply({ embeds: [renderTable()], components: [row] });
+        const col = m.createMessageComponentCollector({ filter: i=>i.user.id===msg.author.id, time: 60000 });
         
         col.on('collect', async i => {
             if(i.customId === 'hit') {
                 pHand.push(deck.pop());
-                if(score(pHand) > 21) {
-                    await i.update({ content: `${render(false)}\n💥 **Estourou 21! Você perdeu!**`, components: [] });
-                    return col.stop();
-                } else await i.update({ content: render(), components: [row] });
-            } else {
-                while(score(dHand) < 17) dHand.push(deck.pop());
-                let ps = score(pHand), ds = score(dHand);
-                let txt = `${render(false)}\n`;
-                if(ds > 21 || ps > ds) {
-                    addPoints(msg.author.id, bet * 2);
-                    txt += `🎉 **VOCÊ VENCEU A BANCA! (+${bet*2} pts)**`;
-                } else if(ps === ds) {
-                    addPoints(msg.author.id, bet); // push
-                    txt += `🤝 **EMPATE!** Fichas devolvidas.`;
+                pScore = calcScore(pHand);
+                if(pScore > 21) {
+                    col.stop();
+                    await i.update({ embeds: [renderTable(false, `💥 Estourou! Você perdeu ${bet} pts.`)], components: [] });
+                } else if(pScore === 21) {
+                    // force stand
+                    i.customId = 'stand';
                 } else {
-                    txt += `❌ **A BANCA VENCEU.**`;
+                    await i.update({ embeds: [renderTable()], components: [row] });
                 }
-                await i.update({ content: txt, components: [] });
+            }
+            
+            if(i.customId === 'stand') {
                 col.stop();
+                let dScore = calcScore(dHand);
+                
+                // Dealer turn animation
+                await i.update({ embeds: [renderTable(false, "Dealer comprando...")], components: [] });
+                while(dScore < 17) {
+                    await wait(1500);
+                    dHand.push(deck.pop());
+                    dScore = calcScore(dHand);
+                    await m.edit({ embeds: [renderTable(false, "Dealer comprando...")] }).catch(()=>{});
+                }
+                
+                await wait(1000);
+                
+                if(dScore > 21) {
+                    const win = bet * 2; addPoints(msg.author.id, win);
+                    await m.edit({ embeds: [renderTable(false, `🎉 Dealer estourou! Ganhou ${win} pts!`)] }).catch(()=>{});
+                } else if(pScore > dScore) {
+                    const win = bet * 2; addPoints(msg.author.id, win);
+                    await m.edit({ embeds: [renderTable(false, `🏆 Você ganhou do Dealer! (+${win} pts)`)] }).catch(()=>{});
+                } else if(pScore === dScore) {
+                    addPoints(msg.author.id, bet);
+                    await m.edit({ embeds: [renderTable(false, `🤝 Empate! Seus ${bet} pts foram devolvidos.`)] }).catch(()=>{});
+                } else {
+                    await m.edit({ embeds: [renderTable(false, `❌ Dealer venceu! Perdeu ${bet} pts.`)] }).catch(()=>{});
+                }
             }
         });
     },
 
-    // 6. Slots
     slots: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
         removePoints(msg.author.id, bet);
@@ -442,25 +507,104 @@ const casino = {
     },
 
     // 8. Baccarat
+    // 8. High-Fidelity Baccarat
     baccarat: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
-        const pick = args[1]?.toLowerCase();
-        if(!['player','banker','tie'].includes(pick)) return msg.reply("Aposte em `player`, `banker` ou `tie`.");
+        const choice = args[1]?.toLowerCase();
+        if(!['player', 'banker', 'tie'].includes(choice)) {
+            return msg.reply("🃏 Escolha em quem apostar: `player`, `banker` ou `tie`.\nEx: `.phantom baccarat 50 player`");
+        }
         removePoints(msg.author.id, bet);
         
-        let pScore = Math.floor(Math.random()*9)+1; let bScore = Math.floor(Math.random()*9)+1;
-        let res = 'tie'; if(pScore>bScore) res = 'player'; else if(bScore>pScore) res = 'banker';
+        const deck = getDeck();
+        const pHand = [deck.pop(), deck.pop()];
+        const bHand = [deck.pop(), deck.pop()];
         
-        let txt = `🃏 **Baccarat**\nJogador: **${pScore}** | Banca: **${bScore}**\nResultado: **${res.toUpperCase()}**\n`;
-        if(pick === res) {
-            const mult = res === 'tie' ? 8 : 2;
-            addPoints(msg.author.id, bet * mult);
-            txt += `🎉 **Você acertou! Ganhou ${bet*mult} pts!**`;
-        } else txt += `❌ Você errou e perdeu a aposta.`;
-        msg.reply(txt);
+        const calcBac = (hand) => {
+            let score = 0;
+            for(let c of hand) {
+                let v = cardVal(c.r);
+                if(v === 10) v = 0;
+                score += v;
+            }
+            return score % 10;
+        };
+        
+        const renderCards = (hand) => {
+            return hand.map(c => `[ ${c.r}${c.s} ]`).join(" ");
+        };
+        
+        const renderTable = (step) => {
+            let pScore = calcBac(pHand.slice(0, step));
+            let bScore = calcBac(bHand.slice(0, step));
+            let pUi = renderCards(pHand.slice(0, step));
+            let bUi = renderCards(bHand.slice(0, step));
+            
+            const color = '#00BFFF';
+            return new EmbedBuilder()
+                .setTitle("🃏 Phantom Baccarat")
+                .setDescription(`**Aposta:** ${bet} pts no **${choice.toUpperCase()}**\n\n**🏦 Banker:** (${bScore})\n\`\`\`\n${bUi}\n\`\`\`\n**👤 Player:** (${pScore})\n\`\`\`\n${pUi}\n\`\`\``)
+                .setColor(color);
+        };
+        
+        const m = await msg.reply({ embeds: [renderTable(0)] });
+        
+        await wait(1200);
+        await m.edit({ embeds: [renderTable(1)] }).catch(()=>{});
+        await wait(1200);
+        await m.edit({ embeds: [renderTable(2)] }).catch(()=>{});
+        
+        let pScore = calcBac(pHand);
+        let bScore = calcBac(bHand);
+        
+        // Third card rules
+        let pThird = false;
+        if(pScore <= 5) {
+            await wait(1200);
+            pHand.push(deck.pop());
+            pThird = true;
+            pScore = calcBac(pHand);
+            await m.edit({ embeds: [renderTable(3)] }).catch(()=>{});
+        }
+        
+        if(bScore <= 5 && (!pThird || pScore <= 7)) {
+            await wait(1200);
+            bHand.push(deck.pop());
+            bScore = calcBac(bHand);
+            await m.edit({ embeds: [renderTable(pThird ? 3 : 2)] }).catch(()=>{}); // force render full hands
+        }
+        
+        await wait(1000);
+        
+        // Render Final
+        let winner = 'tie';
+        if(pScore > bScore) winner = 'player';
+        else if(bScore > pScore) winner = 'banker';
+        
+        let finalStatus = "";
+        let winAmt = 0;
+        let color = '#FF0000';
+        
+        if(winner === choice) {
+            color = '#00FF00';
+            if(winner === 'tie') { winAmt = bet * 9; finalStatus = `🎉 Deu EMPATE! Você ganhou ${winAmt} pts!`; }
+            else if(winner === 'banker') { winAmt = Math.floor(bet * 1.95); finalStatus = `🎉 A Banca ganhou! Você faturou ${winAmt} pts! (5% de taxa)`; }
+            else { winAmt = bet * 2; finalStatus = `🎉 O Jogador ganhou! Você faturou ${winAmt} pts!`; }
+            addPoints(msg.author.id, winAmt);
+        } else {
+            if(winner === 'tie') {
+                finalStatus = `🤝 Deu EMPATE. Suas apostas retornam.`;
+                addPoints(msg.author.id, bet);
+                color = '#FFFF00';
+            } else {
+                finalStatus = `❌ Vencedor: ${winner.toUpperCase()}. Você perdeu ${bet} pts.`;
+            }
+        }
+        
+        const finalEmbed = renderTable(3).setColor(color).setFooter({text: finalStatus});
+        await m.edit({ embeds: [finalEmbed] }).catch(()=>{});
     },
 
-    // 9. Colorbet
     colorbet: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
         removePoints(msg.author.id, bet);
@@ -542,25 +686,89 @@ const casino = {
     },
 
     // 11. Plinko (Simulado via botões e caindo)
+    // 11. High-Fidelity Plinko
     plinko: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
         removePoints(msg.author.id, bet);
-        const mults = [0.2, 0.5, 1.1, 2.0, 5.0, 2.0, 1.1, 0.5, 0.2];
-        let pos = 4; // Start center
-        const m = await msg.reply(`🎱 Soltando a bolinha...`);
-        for(let i=0; i<6; i++) {
-            setTimeout(() => { pos += Math.random()>0.5 ? 1 : -1; }, i*500);
+        
+        const rows = 8;
+        const multipliers = [30, 10, 4, 2, 0.5, 0.2, 0.5, 2, 4, 10, 30]; // 9 buckets for 8 rows, plus edges
+        // Row 8 means it can land in 9 different spots (0 to 8). 
+        // Let's use 8 rows: 0=Leftx8, 1=Leftx7+Rightx1, ..., 8=Rightx8
+        const actualMultipliers = [29, 4, 1.5, 0.3, 0.2, 0.3, 1.5, 4, 29]; // 9 buckets
+        
+        // Path calculation
+        let pos = 0; // Starts at 0
+        const path = []; // stores whether it went left (0) or right (1)
+        for(let i=0; i<rows; i++) {
+            const dir = Math.random() < 0.5 ? 0 : 1;
+            path.push(dir);
+            pos += dir;
         }
-        setTimeout(() => {
-            if(pos<0) pos=0; if(pos>8) pos=8;
-            const mult = mults[pos];
-            const win = Math.floor(bet * mult);
+        const mult = actualMultipliers[pos];
+        const win = Math.floor(bet * mult);
+        
+        const renderFrame = (step) => {
+            let pyramid = "";
+            let currentPos = 0;
+            
+            for(let r=0; r<rows; r++) {
+                let rowStr = " ".repeat(rows - r);
+                for(let c=0; c<=r; c++) {
+                    // Check if ball is here
+                    if(r === step && c === currentPos) {
+                        rowStr += "🔴 ";
+                    } else {
+                        rowStr += "⚪ ";
+                    }
+                }
+                pyramid += rowStr + "\n";
+                // Update pos for next row to trace the path
+                if(r < step) {
+                    currentPos += path[r];
+                }
+            }
+            
+            // Draw buckets at the bottom
+            let buckets = "";
+            let bucketColors = "";
+            for(let m of actualMultipliers) {
+                let color = ansi.red;
+                if(m < 1) color = ansi.white;
+                else if(m < 5) color = ansi.yellow;
+                else color = ansi.green;
+                
+                buckets += `${color}[${m}x]${ansi.reset} `;
+            }
+            
+            const color = step === rows ? (mult > 1 ? '#00FF00' : '#FF0000') : '#00BFFF';
+            const status = step === rows ? `Fim! Bola caiu no ${mult}x` : `Caindo...`;
+            
+            return new EmbedBuilder()
+                .setTitle("🎱 Phantom Plinko")
+                .setDescription(`\`\`\`ansi\n${pyramid}\n${buckets}\n\`\`\`\n**Aposta:** ${bet} pts\n**Status:** ${status}`)
+                .setColor(color);
+        };
+        
+        const m = await msg.reply({ embeds: [renderFrame(0)] });
+        
+        // Animation loop
+        for(let s=1; s<=rows; s++) {
+            await wait(1200);
+            await m.edit({ embeds: [renderFrame(s)] }).catch(()=>{});
+        }
+        
+        // End
+        if(mult > 1) {
             addPoints(msg.author.id, win);
-            m.edit(`🎱 A bolinha caiu na gaveta de **${mult}x**!\nVocê resgatou **${win} pts**.`);
-        }, 3500);
+            await m.edit({ embeds: [renderFrame(rows).setFooter({text: `🎉 Ganhou ${win} pts!`})] }).catch(()=>{});
+        } else {
+            // Returned less or nothing
+            if(win > 0) addPoints(msg.author.id, win);
+            await m.edit({ embeds: [renderFrame(rows).setFooter({text: `📉 Perdeu! Retorno: ${win} pts`})] }).catch(()=>{});
+        }
     },
 
-    // 12. Dicebet
     dicebet: async (msg, args) => {
         const bet = checkBet(msg, args); if(!bet) return;
         const type = args[1]?.toLowerCase(); // over ou under
