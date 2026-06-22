@@ -11,20 +11,21 @@ module.exports = {
     async execute(message, client) {
         if (message.author.bot) return;
 
-        // Central de Ajuda
         if (message.content === '.phantomhelp') {
             const { EmbedBuilder } = require('discord.js');
             const helpEmbed = new EmbedBuilder()
                 .setColor('#2b2d31')
-                .setTitle('🤖 Central de Ajuda - Phantom Community')
-                .setDescription('O Phantom opera de forma híbrida: você pode usar comandos fixos e rápidos, ou pedir o que quiser para a Inteligência Artificial enviando `.phantom <seu pedido>`.')
+                .setTitle('🤖 Painel de Controle - Phantom AI')
+                .setDescription('A IA do Phantom é onipotente. Não decore comandos, apenas **peça em linguagem natural** usando `.phantom <pedido>`. Ela possui **51 Ferramentas Nativas** para controlar o servidor.')
                 .addFields(
-                    { name: '🧠 Inteligência Artificial', value: '`.phantom crie uma categoria chamada VIPs e dois canais dentro dela`\n`.phantom apague as mensagens deste canal`\n*(A IA entende linguagem natural e toma as ações por você)*' },
-                    { name: '🛡️ Moderação', value: '`.phantom ban @usuario [motivo]`\n`.phantom kick @usuario [motivo]`\n`.phantom timeout @usuario <10m/1h/1d> [motivo]`\n`.phantom warn @usuario <motivo>`\n`.phantom history @usuario` *(Vê histórico de punições)*' },
-                    { name: '⚙️ Gerenciamento', value: '`.phantom role create <nome>`\n`.phantom role delete @cargo`\n`.phantom channel create <nome>`\n`.phantom channel edit #canal <novo_nome>`' },
-                    { name: 'ℹ️ Informações', value: '`.phantom userinfo @usuario`\n`.phantom status`' }
+                    { name: '🎙️ Controle de Calls e Voz', value: 'Puxe membros, mute, ensurdeça, crie canais de Palco (Stage), derrube pessoas ou crie calls novas.\n*Ex: `.phantom crie uma call chamada Bate Papo e puxe o @fulano pra lá`*' },
+                    { name: '🧹 Nuke e Moderação Absoluta', value: 'Clone canais inteiros, apague centenas de mensagens, puna usuários, ative o Modo Lento, ou desbane todo mundo de uma vez.\n*Ex: `.phantom clone este canal e apague o antigo`*' },
+                    { name: '🏛️ Arquitetura do Servidor', value: 'Crie e renomeie categorias, mova canais, crie Threads (Tópicos), tranque canais e configure o canal AFK ou de Regras.\n*Ex: `.phantom crie uma categoria VIP e mova a call de suporte pra lá`*' },
+                    { name: '🎭 Identidade e Cargos', value: 'Crie cargos administrativos, distribua tags, mude apelidos, crie Emojis, ou renomeie o servidor.\n*Ex: `.phantom me faça um cargo vermelho chamado Dono Supremo`*' },
+                    { name: '📢 Utilidades', value: 'Faça sorteios, fixe mensagens, gere convites, envie DMs secretas ou solte Embeds super avançados.\n*Ex: `.phantom crie um sorteio de um Pix de 100 reais aqui`*' }
                 )
-                .setFooter({ text: 'Desenvolvido para Phantom Community' })
+                .setImage('https://i.imgur.com/rN5G5f8.gif') // Aesthetic banner (optional but cool)
+                .setFooter({ text: 'Phantom Ultimate Suite - 51 Módulos Ativos' })
                 .setTimestamp();
 
             return message.reply({ embeds: [helpEmbed] });
