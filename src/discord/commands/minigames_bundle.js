@@ -150,7 +150,6 @@ const minigames = {
                 await i.update({ content: `*Click.* <@${i.user.id}> sobreviveu. Próximo! (${current}/6 espaços)`, components: [row] });
             }
         });
-    }, 1500);
     },
 
     fastclick: async (msg) => {
@@ -292,7 +291,6 @@ const minigames = {
         if(!u) return;
         if(Math.random() > 0.5) { addPoints(msg.author.id, 10); msg.reply(`🥷 Roubou <@${u.id}> com sucesso! (+10 pts)`); }
         else { removePoints(msg.author.id, 5); msg.reply(`🚓 Foi preso ao tentar roubar <@${u.id}>! (-5 pts)`); }
-    }, 1500);
     },
 
     guessflag: async (msg) => {
@@ -346,9 +344,8 @@ const minigames = {
             if(s1>=5 || s2>=5) { clearInterval(inter); m.edit(render() + `\n🏆 **Caracol ${s1>=5?'A':'B'}** Venceu!`); }
             else m.edit(render());
         }, 2000);
-    }, a Banca tirou ${bb}. **Você ganhou! (+10 pts)**`); }
-        else { removePoints(msg.author.id, 5); msg.reply(`🃏 **Baccarat**: Você tirou ${pb}, a Banca tirou ${bb}. Você perdeu. (-5 pts)`); }
     },
+
     roshambo: async (msg) => {
         const row = new ActionRowBuilder().addComponents(createBtn('rock', 'Pedra 🪨', ButtonStyle.Secondary), createBtn('paper', 'Papel 📄', ButtonStyle.Secondary), createBtn('scissors', 'Tesoura ✂️', ButtonStyle.Secondary));
         const m = await msg.reply({ content: "Pedra, Papel ou Tesoura?", components: [row] });
