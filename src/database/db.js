@@ -61,6 +61,14 @@ function initDatabase() {
         )
     `).run();
 
+    // Tabela: users (Sistema de Pontos dos Minigames)
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS users (
+            user_id TEXT PRIMARY KEY,
+            points INTEGER DEFAULT 0
+        )
+    `).run();
+
     console.log("[DB] Tabelas verificadas e criadas com sucesso.");
 }
 
@@ -71,7 +79,35 @@ function getDB() {
     return db;
 }
 
+function addPoints(userId, amount) {
+    if (!db) return;
+    try {
+        db.prepare(`INSERT INTO users (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?`).run(userId, amount, amount);
+    } catch(e) { console.error("Erro ao adicionar pontos:", e); }
+}
+
+function getTopPlayers(limit = 10) {
+    if (!db) return [];
+    try {
+        return db.prepare(`SELECT user_id, points FROM users ORDER BY points DESC LIMIT ?`).all(limit);
+    } catch(e) { 
+        console.error("Erro ao buscar top players:", e); 
+        return []; 
+    }
+}
+
+function getUserPoints(userId) {
+    if (!db) return 0;
+    try {
+        const row = db.prepare(`SELECT points FROM users WHERE user_id = ?`).get(userId);
+        return row ? row.points : 0;
+    } catch(e) { return 0; }
+}
+
 module.exports = {
     initDatabase,
-    getDB
+    getDB,
+    addPoints,
+    getTopPlayers,
+    getUserPoints
 };
