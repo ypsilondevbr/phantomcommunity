@@ -6,23 +6,23 @@
         if(bombs < 1 || bombs > 20) return msg.reply("Escolha entre 1 e 20 bombas.");
         removePoints(msg.author.id, bet);
         
-        let grid = Array(25).fill('gem');
+        let grid = Array(16).fill('gem');
         let placed = 0;
         while(placed < bombs) {
-            let r = Math.floor(Math.random()*25);
+            let r = Math.floor(Math.random()*16);
             if(grid[r] === 'gem') { grid[r] = 'bomb'; placed++; }
         }
         
-        let revealed = Array(25).fill(false);
+        let revealed = Array(16).fill(false);
         let mult = 1.0;
         let gemsFound = 0;
         
         const getBoard = (ended = false, explodeIdx = -1) => {
             const rows = [];
-            for(let i=0; i<5; i++) {
+            for(let i=0; i<4; i++) {
                 const r = new ActionRowBuilder();
-                for(let j=0; j<5; j++) {
-                    const idx = i*5+j;
+                for(let j=0; j<4; j++) {
+                    const idx = i*4+j;
                     let style = ButtonStyle.Secondary;
                     let emoji = '🟦';
                     if(revealed[idx] || ended) {
@@ -44,8 +44,8 @@
         const cRow = () => new ActionRowBuilder().addComponents(createBtn('cashout', `💰 CASHOUT (${Math.floor(bet*mult)} pts)`, ButtonStyle.Primary));
         
         const renderHUD = (ended = false, won = false) => {
-            const safeLeft = 25 - bombs - gemsFound;
-            const totalLeft = 25 - gemsFound;
+            const safeLeft = 16 - bombs - gemsFound;
+            const totalLeft = 16 - gemsFound;
             const bombChance = ((bombs / totalLeft) * 100).toFixed(1);
             
             const color = ended ? (won ? '#00FF00' : '#FF0000') : '#00BFFF';
@@ -82,7 +82,7 @@
             } else {
                 gemsFound++;
                 mult += 0.1 + (bombs * 0.05);
-                if(gemsFound === 25 - bombs) {
+                if(gemsFound === 16 - bombs) {
                     const win = Math.floor(bet * mult);
                     addPoints(msg.author.id, win);
                     col.stop();
