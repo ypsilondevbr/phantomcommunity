@@ -227,9 +227,11 @@ const extraCommands = {
     },
     meme: async (msg) => {
         try {
-            const res = await fetch("https://meme-api.com/gimme");
+            const subs = ['ShitpostBR', 'eu_nvr', 'HUEstation', 'DiretoDoZapZap'];
+            const randomSub = subs[Math.floor(Math.random() * subs.length)];
+            const res = await fetch(`https://meme-api.com/gimme/${randomSub}`);
             const data = await res.json();
-            msg.reply({ embeds: [new EmbedBuilder().setTitle(data.title).setImage(data.url).setColor('#FFD700')] });
+            msg.reply({ embeds: [new EmbedBuilder().setTitle(data.title).setImage(data.url).setColor('#FFD700').setFooter({text: `Fonte: r/${randomSub}`})] });
         } catch {
             msg.reply("😂 Erro ao buscar meme... mas o importante é rir.");
         }
