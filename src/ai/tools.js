@@ -86,6 +86,53 @@ const geminiTools = [{
                 },
                 required: ["channel_name", "title", "description"]
             }
+        },
+        {
+            name: "create_role",
+            description: "Cria um novo cargo (role) no servidor.",
+            parameters: {
+                type: "OBJECT",
+                properties: {
+                    name: { type: "STRING", description: "Nome do novo cargo" },
+                    color: { type: "STRING", description: "Cor do cargo em formato Hexadecimal (ex: #FF0000 para vermelho). Escolha cores bonitas e atrativas." }
+                },
+                required: ["name"]
+            }
+        },
+        {
+            name: "delete_role",
+            description: "Deleta um cargo existente do servidor.",
+            parameters: {
+                type: "OBJECT",
+                properties: {
+                    role_name: { type: "STRING", description: "Nome exato ou ID do cargo a ser deletado" }
+                },
+                required: ["role_name"]
+            }
+        },
+        {
+            name: "add_role_to_member",
+            description: "Adiciona um cargo a um usuário específico.",
+            parameters: {
+                type: "OBJECT",
+                properties: {
+                    user_id: { type: "STRING", description: "O ID numérico ou menção do usuário" },
+                    role_name: { type: "STRING", description: "Nome exato ou ID do cargo a ser adicionado" }
+                },
+                required: ["user_id", "role_name"]
+            }
+        },
+        {
+            name: "remove_role_from_member",
+            description: "Remove um cargo de um usuário específico.",
+            parameters: {
+                type: "OBJECT",
+                properties: {
+                    user_id: { type: "STRING", description: "O ID numérico ou menção do usuário" },
+                    role_name: { type: "STRING", description: "Nome exato ou ID do cargo a ser removido" }
+                },
+                required: ["user_id", "role_name"]
+            }
         }
     ]
 }];
@@ -175,6 +222,64 @@ async function executeTool(name, args, message) {
                 
             await channel.send({ embeds: [embed] });
             return `✅ Ação executada pela IA: Anúncio enviado em <#${channel.id}>.`;
+        }
+
+        case "create_role": {
+            if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Bot sem permissão para gerenciar cargos.";
+            const role = await guild.roles.create({
+                name: args.name,
+                color: args.color || null,
+                reason: 'Criado autonomamente pela IA Phantom'
+            }).catch(e => { console.error(e); return null; });
+            
+            if (!role) return "❌ Falha: Não foi possível criar o cargo (verifique permissões e hierarquia).";
+            return `✅ Ação executada pela IA: Cargo '${role.name}' criado com sucesso.`;
+        }
+
+        case "delete_role": {
+            if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Bot sem permissão para gerenciar cargos.";
+            const roleName = args.role_name.replace(/<@&|>/g, '');
+            let role = guild.roles.cache.get(roleName);
+            if (!role) role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase());
+            if (!role) return "❌ Falha: Cargo não encontrado no servidor.";
+            if (role.position >= botMember.roles.highest.position) return "❌ Falha: O cargo é maior ou igual ao meu cargo mais alto.";
+            
+            await role.delete('Deletado autonomamente pela IA Phantom');
+            return `✅ Ação executada pela IA: Cargo deletado com sucesso.`;
+        }
+
+        case "add_role_to_member": {
+            if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Bot sem permissão para gerenciar cargos.";
+            const targetId = extractId(args.user_id);
+            const member = await guild.members.fetch(targetId).catch(() => null);
+            if (!member) return "❌ Falha: Usuário não encontrado.";
+            
+            const roleName = args.role_name.replace(/<@&|>/g, '');
+            let role = guild.roles.cache.get(roleName);
+            if (!role) role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase());
+            if (!role) return "❌ Falha: Cargo não encontrado no servidor.";
+            
+            if (role.position >= botMember.roles.highest.position) return "❌ Falha: O cargo é maior ou igual ao meu cargo mais alto.";
+            
+            await member.roles.add(role).catch(e => { return "❌ Falha: Erro ao adicionar o cargo."; });
+            return `✅ Ação executada pela IA: Cargo '${role.name}' adicionado a <@${targetId}>.`;
+        }
+
+        case "remove_role_from_member": {
+            if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Bot sem permissão para gerenciar cargos.";
+            const targetId = extractId(args.user_id);
+            const member = await guild.members.fetch(targetId).catch(() => null);
+            if (!member) return "❌ Falha: Usuário não encontrado.";
+            
+            const roleName = args.role_name.replace(/<@&|>/g, '');
+            let role = guild.roles.cache.get(roleName);
+            if (!role) role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase());
+            if (!role) return "❌ Falha: Cargo não encontrado no servidor.";
+            
+            if (role.position >= botMember.roles.highest.position) return "❌ Falha: O cargo é maior ou igual ao meu cargo mais alto.";
+            
+            await member.roles.remove(role).catch(e => { return "❌ Falha: Erro ao remover o cargo."; });
+            return `✅ Ação executada pela IA: Cargo '${role.name}' removido de <@${targetId}>.`;
         }
 
         default:
