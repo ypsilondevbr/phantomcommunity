@@ -16,17 +16,17 @@ module.exports = {
             const helpEmbed = new EmbedBuilder()
                 .setColor('#2b2d31')
                 .setTitle('🤖 Painel de Controle - Phantom AI')
-                .setDescription('A IA do Phantom é onipotente. Não decore comandos, apenas **peça em linguagem natural** usando `.phantom <pedido>`. Ela possui **51 Ferramentas Nativas** para controlar o servidor.')
+                .setDescription('Você pode pedir ações para a IA enviando `.phantom <seu pedido>`. A IA tentará mapear o seu texto para uma destas **51 funções nativas (comandos pré-prontos)**:')
                 .addFields(
-                    { name: '🎙️ Controle de Calls e Voz', value: 'Puxe membros, mute, ensurdeça, crie canais de Palco (Stage), derrube pessoas ou crie calls novas.\n*Ex: `.phantom crie uma call chamada Bate Papo e puxe o @fulano pra lá`*' },
-                    { name: '🧹 Nuke e Moderação Absoluta', value: 'Clone canais inteiros, apague centenas de mensagens, puna usuários, ative o Modo Lento, ou desbane todo mundo de uma vez.\n*Ex: `.phantom clone este canal e apague o antigo`*' },
-                    { name: '🏛️ Arquitetura do Servidor', value: 'Crie e renomeie categorias, mova canais, crie Threads (Tópicos), tranque canais e configure o canal AFK ou de Regras.\n*Ex: `.phantom crie uma categoria VIP e mova a call de suporte pra lá`*' },
-                    { name: '🎭 Identidade e Cargos', value: 'Crie cargos administrativos, distribua tags, mude apelidos, crie Emojis, ou renomeie o servidor.\n*Ex: `.phantom me faça um cargo vermelho chamado Dono Supremo`*' },
-                    { name: '📢 Utilidades', value: 'Faça sorteios, fixe mensagens, gere convites, envie DMs secretas ou solte Embeds super avançados.\n*Ex: `.phantom crie um sorteio de um Pix de 100 reais aqui`*' },
-                    { name: '⚡ Comandos Clássicos (Pré-Prontos)', value: 'O bot também tem funções manuais rápidas (sem usar a IA):\n`.phantom ban @user` | `.phantom kick @user`\n`.phantom timeout @user <tempo>` | `.phantom warn @user`\n`.phantom history @user` | `.phantom userinfo @user`\n`.phantom role create/delete` | `.phantom channel create/edit`' }
+                    { name: '🧹 Moderação e Limpeza', value: '`limpar_mensagens`, `expulsar_membro`, `banir_membro`, `desbanir_membro`, `castigar_membro`, `tirar_castigo_membro`, `limpar_bans`, `limpar_canal_nuke`' },
+                    { name: '🎙️ Controle de Voz e Calls', value: '`ensurdecer_membro`, `desensurdecer_membro`, `mutar_membro_call`, `desmutar_membro_call`, `mover_membro_call`, `derrubar_membro_call`' },
+                    { name: '🏛️ Estrutura do Servidor', value: '`criar_canal_texto`, `criar_canal_voz`, `criar_canal_anuncio`, `criar_canal_palco`, `deletar_canal`, `clonar_canal`, `trancar_canal`, `destrancar_canal`, `modo_lento`, `editar_topico_canal`, `set_canal_afk`, `set_canal_regras`' },
+                    { name: '📁 Categorias e Tópicos', value: '`criar_categoria`, `renomear_categoria`, `deletar_categoria`, `mover_canal_categoria`, `criar_topico_thread`, `deletar_topico_thread`, `trancar_topico_thread`, `destrancar_topico_thread`' },
+                    { name: '🎭 Cargos e Identidade', value: '`criar_cargo_admin`, `criar_cargo`, `editar_cargo`, `deletar_cargo`, `dar_cargo_membro`, `tirar_cargo_membro`, `mudar_apelido`, `mudar_nome_servidor`, `criar_emoji`, `deletar_emoji`' },
+                    { name: '📢 Comunicação e Utilidades', value: '`enviar_anuncio`, `enviar_mensagem_embed_avancado`, `criar_sorteio`, `enviar_dm`, `fixar_mensagem`, `desfixar_mensagem`, `criar_convite`' },
+                    { name: '⚡ Comandos Manuais (Sem IA)', value: '`.phantom ban`, `.phantom kick`, `.phantom warn`, `.phantom timeout`, `.phantom userinfo`, `.phantom history`, `.phantom role create/delete`, `.phantom channel create/edit`' }
                 )
-                .setImage('https://i.imgur.com/rN5G5f8.gif') // Aesthetic banner (optional but cool)
-                .setFooter({ text: 'Phantom Ultimate Suite - 51 Módulos Ativos' })
+                .setFooter({ text: 'Phantom Ultimate Suite - 51 Funções Traduzidas Ativas' })
                 .setTimestamp();
 
             return message.reply({ embeds: [helpEmbed] });
