@@ -100,14 +100,29 @@ const insults = [
     "Seu cérebro está em modo de economia de energia?"
 ];
 
-function actionEmbed(msg, title, gifUrl) {
-    const u = msg.mentions.users.first();
-    if(!u) return msg.reply("❌ Mencione alguém!");
-    return msg.reply({ embeds: [new EmbedBuilder().setDescription(`**<@${msg.author.id}>** ${title} **<@${u.id}>**!`).setImage(gifUrl).setColor('#FF69B4')] });
+async function getGif(category, fallback) {
+    try {
+        const res = await fetch(`https://api.waifu.pics/sfw/${category}`);
+        if (res.ok) {
+            const data = await res.json();
+            return data.url;
+        }
+        return fallback;
+    } catch {
+        return fallback;
+    }
 }
 
-function soloActionEmbed(msg, desc, gifUrl) {
-    return msg.reply({ embeds: [new EmbedBuilder().setDescription(`**<@${msg.author.id}>** ${desc}!`).setImage(gifUrl).setColor('#FF69B4')] });
+async function actionEmbed(msg, title, category, fallbackGif) {
+    const u = msg.mentions.users.first();
+    if(!u) return msg.reply("❌ Mencione alguém!");
+    const gif = await getGif(category, fallbackGif);
+    return msg.reply({ embeds: [new EmbedBuilder().setDescription(`**<@${msg.author.id}>** ${title} **<@${u.id}>**!`).setImage(gif).setColor('#FF69B4')] });
+}
+
+async function soloActionEmbed(msg, desc, category, fallbackGif) {
+    const gif = await getGif(category, fallbackGif);
+    return msg.reply({ embeds: [new EmbedBuilder().setDescription(`**<@${msg.author.id}>** ${desc}!`).setImage(gif).setColor('#FF69B4')] });
 }
 
 const extraCommands = {
@@ -132,35 +147,35 @@ const extraCommands = {
     giveaway: async (msg, args) => { const m = await msg.channel.send({embeds: [new EmbedBuilder().setTitle("🎉 SORTEIO!").setDescription(`Prêmio: **${args.join(' ') || "Prêmio"}**\nReaja com 🎉`).setColor('#FF00FF')]}); await m.react('🎉'); },
     math: (msg, args) => { try { msg.reply(`🧮 Resultado: **${eval(args.join('').replace(/[^0-9+\-*/().]/g, ''))}**`); } catch(e) { msg.reply("❌ Erro."); } },
     
-    // ROLEPLAY & INTERAÇÕES (GIFs)
-    slap: (msg) => actionEmbed(msg, "deu um tapa ardido em", "https://media1.tenor.com/m/PeJyQRCS8BEAAAAd/smiting-ruina-smiting.gif"),
-    hug: (msg) => actionEmbed(msg, "deu um abraço quentinho em", "https://media.giphy.com/media/lrr9cScdxK0RW/giphy.gif"),
-    kiss: (msg) => actionEmbed(msg, "deu um beijão em", "https://media.giphy.com/media/G3va31oGkPcNq/giphy.gif"),
-    punch: (msg) => actionEmbed(msg, "deu um socão em", "https://media.giphy.com/media/xT0BKyy5bFq6hX8ZUI/giphy.gif"),
-    pat: (msg) => actionEmbed(msg, "fez carinho em", "https://media.giphy.com/media/109OqamS0h8u8U/giphy.gif"),
-    kill: (msg) => actionEmbed(msg, "assassinou impiedosamente", "https://media.giphy.com/media/11HeubLHnQJSAU/giphy.gif"),
-    bite: (msg) => actionEmbed(msg, "deu uma mordida em", "https://media.giphy.com/media/OqQvwi5wCGpvLFPAiV/giphy.gif"),
-    tickle: (msg) => actionEmbed(msg, "fez cócegas em", "https://media.giphy.com/media/cZ7rmKf6DZCs0/giphy.gif"),
-    poke: (msg) => actionEmbed(msg, "cutucou", "https://media.giphy.com/media/l0ExdMHqkEEuB4oNO/giphy.gif"),
-    highfive: (msg) => actionEmbed(msg, "bateu as mãos (highfive) com", "https://media.giphy.com/media/3oEjHV0z8S7WM4MwnK/giphy.gif"),
-    stare: (msg) => actionEmbed(msg, "encarou fixamente", "https://media.giphy.com/media/3o7TKSxdQJIsPj3aF2/giphy.gif"),
-    cuddle: (msg) => actionEmbed(msg, "se aconchegou com", "https://media.giphy.com/media/143v0Z4767T15e/giphy.gif"),
-    feed: (msg) => actionEmbed(msg, "deu comidinha para", "https://media.giphy.com/media/11wsJ1i06L6m1q/giphy.gif"),
-    wave: (msg) => soloActionEmbed(msg, "acenou!", "https://media.giphy.com/media/3o7aDgf134NzaaHI8o/giphy.gif"),
-    dance: (msg) => soloActionEmbed(msg, "começou a dançar!", "https://media.giphy.com/media/14qb1Uhf40ndw4/giphy.gif"),
-    cry: (msg) => soloActionEmbed(msg, "está chorando...", "https://media.giphy.com/media/2rtQMJvhzOnRe/giphy.gif"),
-    laugh: (msg) => soloActionEmbed(msg, "está rindo à toa!", "https://media.giphy.com/media/10JhviFuU2gWD6/giphy.gif"),
-    blush: (msg) => soloActionEmbed(msg, "ficou com vergonha...", "https://media.giphy.com/media/11c7UUfNzeY156/giphy.gif"),
-    smug: (msg) => soloActionEmbed(msg, "está com um sorriso convencido.", "https://media.giphy.com/media/7YItDIys6EN7CnnVlu/giphy.gif"),
-    pout: (msg) => soloActionEmbed(msg, "fez bico de irritação.", "https://media.giphy.com/media/26AHteTfafcdKC6ys/giphy.gif"),
-    confused: (msg) => soloActionEmbed(msg, "está muito confuso...", "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif"),
-    angry: (msg) => soloActionEmbed(msg, "está furioso!", "https://media.giphy.com/media/11tTNkNy1SdXGg/giphy.gif"),
-    happy: (msg) => soloActionEmbed(msg, "está muito feliz!", "https://media.giphy.com/media/26tP3M3i03HO30mNa/giphy.gif"),
-    sad: (msg) => soloActionEmbed(msg, "está triste...", "https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif"),
-    shocked: (msg) => soloActionEmbed(msg, "ficou em choque!", "https://media.giphy.com/media/6nWhy3ulmR2tCgXU3x/giphy.gif"),
-    sleep: (msg) => soloActionEmbed(msg, "foi dormir...", "https://media.giphy.com/media/3o6Zt47qQ0W0a0tA5u/giphy.gif"),
-    bored: (msg) => soloActionEmbed(msg, "está morrendo de tédio...", "https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif"),
-    wink: (msg) => soloActionEmbed(msg, "piscou!", "https://media.giphy.com/media/10o3l6aK1A5y1i/giphy.gif"),
+    // ROLEPLAY & INTERAÇÕES (GIFs) - Now powered by waifu.pics API for guaranteed gifs!
+    slap: async (msg) => await actionEmbed(msg, "deu um tapa ardido em", "slap", "https://i.imgur.com/fm49kMb.gif"),
+    hug: async (msg) => await actionEmbed(msg, "deu um abraço quentinho em", "hug", "https://i.imgur.com/r9aU2xv.gif"),
+    kiss: async (msg) => await actionEmbed(msg, "deu um beijão em", "kiss", "https://i.imgur.com/sGVgwOU.gif"),
+    punch: async (msg) => await actionEmbed(msg, "deu um socão em", "bonk", "https://i.imgur.com/f0EQBQZ.gif"),
+    pat: async (msg) => await actionEmbed(msg, "fez carinho em", "pat", "https://i.imgur.com/2lacG7l.gif"),
+    kill: async (msg) => await actionEmbed(msg, "assassinou impiedosamente", "kill", "https://i.imgur.com/QhT7873.gif"),
+    bite: async (msg) => await actionEmbed(msg, "deu uma mordida em", "bite", "https://i.imgur.com/NOJeKjC.gif"),
+    tickle: async (msg) => await actionEmbed(msg, "fez cócegas em", "tickle", "https://i.imgur.com/k2x22b2.gif"),
+    poke: async (msg) => await actionEmbed(msg, "cutucou", "poke", "https://i.imgur.com/3ZfP2aG.gif"),
+    highfive: async (msg) => await actionEmbed(msg, "bateu as mãos (highfive) com", "highfive", "https://i.imgur.com/lMtbJt0.gif"),
+    stare: async (msg) => await actionEmbed(msg, "encarou fixamente", "stare", "https://i.imgur.com/pZqNnK6.gif"),
+    cuddle: async (msg) => await actionEmbed(msg, "se aconchegou com", "cuddle", "https://i.imgur.com/x10UfM7.gif"),
+    feed: async (msg) => await actionEmbed(msg, "deu comidinha para", "nom", "https://i.imgur.com/1G8VIf1.gif"),
+    wave: async (msg) => await soloActionEmbed(msg, "acenou!", "wave", "https://i.imgur.com/rNNO5hI.gif"),
+    dance: async (msg) => await soloActionEmbed(msg, "começou a dançar!", "dance", "https://i.imgur.com/3Z4h4d0.gif"),
+    cry: async (msg) => await soloActionEmbed(msg, "está chorando...", "cry", "https://i.imgur.com/Xq3xU28.gif"),
+    laugh: async (msg) => await soloActionEmbed(msg, "está rindo à toa!", "smile", "https://i.imgur.com/p1J5rL4.gif"),
+    blush: async (msg) => await soloActionEmbed(msg, "ficou com vergonha...", "blush", "https://i.imgur.com/n6t3m9k.gif"),
+    smug: async (msg) => await soloActionEmbed(msg, "está com um sorriso convencido.", "smug", "https://i.imgur.com/L12s1oD.gif"),
+    pout: async (msg) => await soloActionEmbed(msg, "fez bico de irritação.", "pout", "https://i.imgur.com/E5Jz8Q1.gif"),
+    confused: async (msg) => await soloActionEmbed(msg, "está muito confuso...", "confused", "https://i.imgur.com/AByF925.gif"),
+    angry: async (msg) => await soloActionEmbed(msg, "está furioso!", "angry", "https://i.imgur.com/1N5Wz3V.gif"),
+    happy: async (msg) => await soloActionEmbed(msg, "está muito feliz!", "happy", "https://i.imgur.com/oZ8GZ5r.gif"),
+    sad: async (msg) => await soloActionEmbed(msg, "está triste...", "cry", "https://i.imgur.com/Xq3xU28.gif"),
+    shocked: async (msg) => await soloActionEmbed(msg, "ficou em choque!", "cringe", "https://i.imgur.com/yU4bZ1U.gif"),
+    sleep: async (msg) => await soloActionEmbed(msg, "foi dormir...", "sleep", "https://i.imgur.com/G5ZkX1H.gif"),
+    bored: async (msg) => await soloActionEmbed(msg, "está morrendo de tédio...", "bored", "https://i.imgur.com/qU3w8eG.gif"),
+    wink: async (msg) => await soloActionEmbed(msg, "piscou!", "wink", "https://i.imgur.com/6kYq0V1.gif"),
 
     // MINIGAMES, MEASURES & ZUEIRAS
     '8ball': (msg) => {
@@ -210,7 +225,15 @@ const extraCommands = {
             return msg.reply(`Eu escolhi **${botChoice}**. Você GANHOU! 🎉`);
         return msg.reply(`Eu escolhi **${botChoice}**. Você PERDEU! 😈`);
     },
-    meme: (msg) => msg.reply("😂 https://media.giphy.com/media/148x4ezZxczpzO/giphy.gif"),
+    meme: async (msg) => {
+        try {
+            const res = await fetch("https://meme-api.com/gimme");
+            const data = await res.json();
+            msg.reply({ embeds: [new EmbedBuilder().setTitle(data.title).setImage(data.url).setColor('#FFD700')] });
+        } catch {
+            msg.reply("😂 Erro ao buscar meme... mas o importante é rir.");
+        }
+    },
 
     // MODERATION & ADMIN (Legacy)
     unban: async (msg, args) => { if (msg.member.permissions.has(PermissionsBitField.Flags.BanMembers)) msg.guild.members.unban(args[0]).then(()=> msg.reply("✅ Desbanido.")).catch(()=>{}); },
