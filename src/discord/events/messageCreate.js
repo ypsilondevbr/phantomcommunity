@@ -15,18 +15,15 @@ module.exports = {
             const { EmbedBuilder } = require('discord.js');
             const helpEmbed = new EmbedBuilder()
                 .setColor('#2b2d31')
-                .setTitle('🤖 Painel de Controle - Phantom AI')
-                .setDescription('Você pode pedir ações para a IA enviando `.phantom <seu pedido>`. A IA tentará mapear o seu texto para uma destas **51 funções nativas (comandos pré-prontos)**:')
+                .setTitle('🤖 Painel de Comandos - Phantom')
+                .setDescription('**A IA trabalha de forma invisível via texto natural.** Mas se você quiser usar comandos manuais rápidos, temos **50 Comandos Clássicos** prontos para uso. Abaixo está a lista organizada:')
                 .addFields(
-                    { name: '🧹 Moderação e Limpeza', value: '`limpar_mensagens`, `expulsar_membro`, `banir_membro`, `desbanir_membro`, `castigar_membro`, `tirar_castigo_membro`, `limpar_bans`, `limpar_canal_nuke`' },
-                    { name: '🎙️ Controle de Voz e Calls', value: '`ensurdecer_membro`, `desensurdecer_membro`, `mutar_membro_call`, `desmutar_membro_call`, `mover_membro_call`, `derrubar_membro_call`' },
-                    { name: '🏛️ Estrutura do Servidor', value: '`criar_canal_texto`, `criar_canal_voz`, `criar_canal_anuncio`, `criar_canal_palco`, `deletar_canal`, `clonar_canal`, `trancar_canal`, `destrancar_canal`, `modo_lento`, `editar_topico_canal`, `set_canal_afk`, `set_canal_regras`' },
-                    { name: '📁 Categorias e Tópicos', value: '`criar_categoria`, `renomear_categoria`, `deletar_categoria`, `mover_canal_categoria`, `criar_topico_thread`, `deletar_topico_thread`, `trancar_topico_thread`, `destrancar_topico_thread`' },
-                    { name: '🎭 Cargos e Identidade', value: '`criar_cargo_admin`, `criar_cargo`, `editar_cargo`, `deletar_cargo`, `dar_cargo_membro`, `tirar_cargo_membro`, `mudar_apelido`, `mudar_nome_servidor`, `criar_emoji`, `deletar_emoji`' },
-                    { name: '📢 Comunicação e Utilidades', value: '`enviar_anuncio`, `enviar_mensagem_embed_avancado`, `criar_sorteio`, `enviar_dm`, `fixar_mensagem`, `desfixar_mensagem`, `criar_convite`' },
-                    { name: '⚡ Comandos Manuais (Sem IA)', value: '`.phantom ban`, `.phantom kick`, `.phantom warn`, `.phantom timeout`, `.phantom userinfo`, `.phantom history`, `.phantom role create/delete`, `.phantom channel create/edit`' }
+                    { name: '🧹 Moderação Extra', value: '`.phantom unban <ID>` - Desbane\n`.phantom untimeout <@>` - Tira castigo\n`.phantom lock` - Tranca canal\n`.phantom unlock` - Destranca canal\n`.phantom slowmode <s/m/h>` - Modo lento\n`.phantom clear <1-100>` - Apaga mensagens\n`.phantom nuke` - Recria o canal apagando tudo\n`.phantom mute <@>` - Muta microfone\n`.phantom unmute <@>` - Desmuta\n`.phantom deafen <@>` - Ensurdece\n`.phantom undeafen <@>` - Desensurdece\n`.phantom addrole <@> <@cargo>` - Dá cargo\n`.phantom removerole <@> <@cargo>` - Tira cargo\n`.phantom lockdown` - Tranca servidor todo\n`.phantom unlockdown` - Destranca tudo' },
+                    { name: 'ℹ️ Informação & Utils', value: '`.phantom serverinfo` - Infos do Server\n`.phantom botinfo` - Infos do Bot\n`.phantom avatar <@>` - Vê a foto\n`.phantom ping` - Latência\n`.phantom uptime` - Tempo online\n`.phantom roles` - Conta cargos\n`.phantom emojis` - Conta emojis\n`.phantom invite` - Gera link\n`.phantom math <conta>` - Faz cálculos\n`.phantom nick <@> <nome>` - Muda apelido\n`.phantom setafk` - Seta call AFK' },
+                    { name: '🎉 Diversão & Interação', value: '`.phantom 8ball <pergunta>` - Jogo da bola Mágica\n`.phantom coinflip` - Cara ou Coroa\n`.phantom roll` - Rola um dado (1 a 6)\n`.phantom slap <@>` - Dá um tapa\n`.phantom hug <@>` - Abraça\n`.phantom kiss <@>` - Beija\n`.phantom punch <@>` - Soca\n`.phantom pat <@>` - Carinho\n`.phantom kill <@>` - Finaliza\n`.phantom meme` - Envia um meme\n`.phantom joke` - Conta piada\n`.phantom say <texto>` - Bot fala\n`.phantom embed <texto>` - Envia Embed\n`.phantom poll <texto>` - Cria votação\n`.phantom giveaway <premio>` - Sorteio\n`.phantom move <@> <#call>` - Move na call\n`.phantom disconnect <@>` - Derruba da call' },
+                    { name: '🛡️ Comandos Bases (Core)', value: '`.phantom ban <@>` - Banir\n`.phantom kick <@>` - Expulsar\n`.phantom timeout <@>` - Castigar\n`.phantom warn <@>` - Advertir\n`.phantom history <@>` - Histórico de bans\n`.phantom userinfo <@>` - Ficha do usuário\n`.phantom role create/delete` - Manipula cargo\n`.phantom channel create/delete` - Manipula canal\n`.phantom status` - Status do Bot\n`.phantom debug` - Debug da API Key' }
                 )
-                .setFooter({ text: 'Phantom Ultimate Suite - 51 Funções Traduzidas Ativas' })
+                .setFooter({ text: 'Phantom Classic Suite - 50 Comandos' })
                 .setTimestamp();
 
             return message.reply({ embeds: [helpEmbed] });
@@ -100,6 +97,12 @@ module.exports = {
         if (command === 'channel') {
             const channelCommand = require('../commands/admin/channel');
             return channelCommand.execute(message, args);
+        }
+
+        // Executa comandos clássicos do Bundle
+        const extraCommands = require('../commands/bundle');
+        if (extraCommands[command]) {
+            return extraCommands[command](message, args);
         }
 
         // Comandos que ainda serão implementados e usarão sistemas / setups massivos
