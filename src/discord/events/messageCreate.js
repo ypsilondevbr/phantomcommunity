@@ -26,7 +26,7 @@ module.exports = {
                     { name: '🕹️ Central de Jogos (2/2)', value: '`.phantom chop` - Corta\n`.phantom rob <@>` - Rouba\n`.phantom guessflag` - Bandeira\n`.phantom coinflipduel <@>` - Moeda\n`.phantom neverhaveiever` - Eu Nunca\n`.phantom higherlower` - + ou -\n`.phantom trivia` - Quiz\n`.phantom anagram` - Anagrama\n`.phantom roshambo` - PPT Botões\n`.phantom impostor` - Impostor\n`.phantom luckybox` - Sorte\n`.phantom snailrace` - Caracóis' },
                     { name: '🎲 Minigames Clássicos', value: '`.phantom 8ball <txt>` - Prevê futuro\n`.phantom roll` - Rola dado\n`.phantom rps <ppt>` - Jokenpô\n`.phantom meme` - Meme BR\n`.phantom joke` - Piada\n`.phantom dadjoke` - Tiozão\n`.phantom fact` - Fato\n`.phantom quote` - Frase\n`.phantom hack <@>` - Finge hackear\n`.phantom ship <@>` - Casal\n`.phantom marry <@>` - Casamento\n`.phantom divorce <@>` - Divórcio\n`.phantom reverse <txt>` - Inverte\n`.phantom mock <txt>` - fInGe\n`.phantom uwu <txt>` - fofo uwu' },
                     { name: '📊 Medidores & Zueira', value: '`.phantom insult <@>` - Insulta\n`.phantom compliment <@>` - Elogia\n`.phantom rate <@>` - Dá nota\n`.phantom pp <@>` - Mede o p*\n`.phantom gayrate <@>` - % Viadagem\n`.phantom simprate <@>` - % Gado\n`.phantom cornorate <@>` - % Corno\n`.phantom gadometro <@>` - % Gado\n`.phantom gostosorate <@>` - % Gostosura\n`.phantom machorate <@>` - % Macho Alfa\n`.phantom burrorate <@>` - % Burrice\n`.phantom feiorate <@>` - % Feiura\n`.phantom pobrerate <@>` - % Pobreza\n`.phantom iq <@>` - Mede o QI' },
-                    { name: '🛡️ Comandos Bases (Owner)', value: '`.phantom ban <@>` - Ban\n`.phantom kick <@>` - Expulsa\n`.phantom timeout <@>` - Castiga\n`.phantom warn <@>` - Adverte\n`.phantom history <@>` - Histórico\n`.phantom userinfo <@>` - Ficha\n`.phantom status` - Status\n`.phantom debug` - Debug' }
+                    { name: '🛡️ Comandos Bases (Owner)', value: '`.phantom ban <@>` - Ban\n`.phantom kick <@>` - Expulsa\n`.phantom timeout <@>` - Castiga\n`.phantom warn <@>` - Adverte\n`.phantom history <@>` - Histórico\n`.phantom userinfo <@>` - Ficha\n`.phantom status` - Status\n`.phantom debug` - Debug\n`.phantom addpoints <@> <qtd>` - Dá pts' }
                 )
                 .setFooter({ text: 'Phantom Classic Suite - 90 Comandos Ativos' })
                 .setTimestamp();
@@ -84,7 +84,7 @@ module.exports = {
         }
 
         // Interceptador de Segurança (Restrição a Owner)
-        const dangerousCommands = ['ban', 'kick', 'timeout', 'warn', 'history', 'role', 'channel', 'unban', 'untimeout', 'lock', 'unlock', 'clear', 'nuke', 'mute', 'unmute', 'deafen', 'undeafen', 'addrole', 'removerole', 'lockdown', 'unlockdown', 'disconnect', 'move'];
+        const dangerousCommands = ['addpoints', 'ban', 'kick', 'timeout', 'warn', 'history', 'role', 'channel', 'unban', 'untimeout', 'lock', 'unlock', 'clear', 'nuke', 'mute', 'unmute', 'deafen', 'undeafen', 'addrole', 'removerole', 'lockdown', 'unlockdown', 'disconnect', 'move'];
         if (dangerousCommands.includes(command)) {
             const isGuildOwner = message.author.id === message.guild.ownerId;
             const hasOwnerRole = message.member.roles.cache.some(r => r.name.toLowerCase().includes('owner') || r.name.toLowerCase().includes('dono') || r.name.toLowerCase().includes('fundador'));
@@ -111,6 +111,10 @@ module.exports = {
         if (command === 'channel') {
             const channelCommand = require('../commands/admin/channel');
             return channelCommand.execute(message, args);
+        }
+        if (command === 'addpoints') {
+            const addpointsCommand = require('../commands/admin/addpoints');
+            return addpointsCommand.execute(message, args);
         }
 
         // Executa comandos clássicos do Bundle
