@@ -102,7 +102,7 @@ const insults = [
 
 async function getGif(category, fallback) {
     try {
-        const res = await fetch(`https://api.waifu.pics/sfw/${category}`);
+        const res = await fetch(`https://api.otakugifs.xyz/gif?reaction=${category}`);
         if (res.ok) {
             const data = await res.json();
             return data.url;
@@ -147,35 +147,35 @@ const extraCommands = {
     giveaway: async (msg, args) => { const m = await msg.channel.send({embeds: [new EmbedBuilder().setTitle("🎉 SORTEIO!").setDescription(`Prêmio: **${args.join(' ') || "Prêmio"}**\nReaja com 🎉`).setColor('#FF00FF')]}); await m.react('🎉'); },
     math: (msg, args) => { try { msg.reply(`🧮 Resultado: **${eval(args.join('').replace(/[^0-9+\-*/().]/g, ''))}**`); } catch(e) { msg.reply("❌ Erro."); } },
     
-    // ROLEPLAY & INTERAÇÕES (GIFs) - Now powered by waifu.pics API for guaranteed gifs!
-    slap: async (msg) => await actionEmbed(msg, "deu um tapa ardido em", "slap", "https://i.imgur.com/fm49kMb.gif"),
-    hug: async (msg) => await actionEmbed(msg, "deu um abraço quentinho em", "hug", "https://i.imgur.com/r9aU2xv.gif"),
-    kiss: async (msg) => await actionEmbed(msg, "deu um beijão em", "kiss", "https://i.imgur.com/sGVgwOU.gif"),
-    punch: async (msg) => await actionEmbed(msg, "deu um socão em", "bonk", "https://i.imgur.com/f0EQBQZ.gif"),
-    pat: async (msg) => await actionEmbed(msg, "fez carinho em", "pat", "https://i.imgur.com/2lacG7l.gif"),
-    kill: async (msg) => await actionEmbed(msg, "assassinou impiedosamente", "kill", "https://i.imgur.com/QhT7873.gif"),
-    bite: async (msg) => await actionEmbed(msg, "deu uma mordida em", "bite", "https://i.imgur.com/NOJeKjC.gif"),
-    tickle: async (msg) => await actionEmbed(msg, "fez cócegas em", "tickle", "https://i.imgur.com/k2x22b2.gif"),
-    poke: async (msg) => await actionEmbed(msg, "cutucou", "poke", "https://i.imgur.com/3ZfP2aG.gif"),
-    highfive: async (msg) => await actionEmbed(msg, "bateu as mãos (highfive) com", "highfive", "https://i.imgur.com/lMtbJt0.gif"),
-    stare: async (msg) => await actionEmbed(msg, "encarou fixamente", "stare", "https://i.imgur.com/pZqNnK6.gif"),
-    cuddle: async (msg) => await actionEmbed(msg, "se aconchegou com", "cuddle", "https://i.imgur.com/x10UfM7.gif"),
-    feed: async (msg) => await actionEmbed(msg, "deu comidinha para", "nom", "https://i.imgur.com/1G8VIf1.gif"),
-    wave: async (msg) => await soloActionEmbed(msg, "acenou!", "wave", "https://i.imgur.com/rNNO5hI.gif"),
-    dance: async (msg) => await soloActionEmbed(msg, "começou a dançar!", "dance", "https://i.imgur.com/3Z4h4d0.gif"),
-    cry: async (msg) => await soloActionEmbed(msg, "está chorando...", "cry", "https://i.imgur.com/Xq3xU28.gif"),
-    laugh: async (msg) => await soloActionEmbed(msg, "está rindo à toa!", "smile", "https://i.imgur.com/p1J5rL4.gif"),
-    blush: async (msg) => await soloActionEmbed(msg, "ficou com vergonha...", "blush", "https://i.imgur.com/n6t3m9k.gif"),
-    smug: async (msg) => await soloActionEmbed(msg, "está com um sorriso convencido.", "smug", "https://i.imgur.com/L12s1oD.gif"),
-    pout: async (msg) => await soloActionEmbed(msg, "fez bico de irritação.", "pout", "https://i.imgur.com/E5Jz8Q1.gif"),
-    confused: async (msg) => await soloActionEmbed(msg, "está muito confuso...", "confused", "https://i.imgur.com/AByF925.gif"),
-    angry: async (msg) => await soloActionEmbed(msg, "está furioso!", "angry", "https://i.imgur.com/1N5Wz3V.gif"),
-    happy: async (msg) => await soloActionEmbed(msg, "está muito feliz!", "happy", "https://i.imgur.com/oZ8GZ5r.gif"),
-    sad: async (msg) => await soloActionEmbed(msg, "está triste...", "cry", "https://i.imgur.com/Xq3xU28.gif"),
-    shocked: async (msg) => await soloActionEmbed(msg, "ficou em choque!", "cringe", "https://i.imgur.com/yU4bZ1U.gif"),
-    sleep: async (msg) => await soloActionEmbed(msg, "foi dormir...", "sleep", "https://i.imgur.com/G5ZkX1H.gif"),
-    bored: async (msg) => await soloActionEmbed(msg, "está morrendo de tédio...", "bored", "https://i.imgur.com/qU3w8eG.gif"),
-    wink: async (msg) => await soloActionEmbed(msg, "piscou!", "wink", "https://i.imgur.com/6kYq0V1.gif"),
+    // ROLEPLAY & INTERAÇÕES (GIFs) - Robust fallback system + Otakugifs API
+    slap: async (msg) => await actionEmbed(msg, "deu um tapa ardido em", "slap", "https://media1.tenor.com/m/PeJyQRCS8BEAAAAd/smiting-ruina-smiting.gif"),
+    hug: async (msg) => await actionEmbed(msg, "deu um abraço quentinho em", "hug", "https://media1.tenor.com/m/9e1aE_xHNBEAAAAd/anime-hug.gif"),
+    kiss: async (msg) => await actionEmbed(msg, "deu um beijão em", "kiss", "https://media1.tenor.com/m/F02Ep3b2jGgAAAAd/anime-kiss.gif"),
+    punch: async (msg) => await actionEmbed(msg, "deu um socão em", "punch", "https://media1.tenor.com/m/5G4-I0fJkF0AAAAd/bonk.gif"),
+    pat: async (msg) => await actionEmbed(msg, "fez carinho em", "pat", "https://media1.tenor.com/m/N41zKIGX-XQAAAAd/anime-head-pat.gif"),
+    kill: async (msg) => await actionEmbed(msg, "assassinou impiedosamente", "kill", "https://media1.tenor.com/m/O2r2v-B3rXwAAAAd/die.gif"),
+    bite: async (msg) => await actionEmbed(msg, "deu uma mordida em", "bite", "https://media1.tenor.com/m/rU0Q5YmN2P0AAAAd/anime-bite.gif"),
+    tickle: async (msg) => await actionEmbed(msg, "fez cócegas em", "tickle", "https://media1.tenor.com/m/tB4hXG8zE2AAAAAd/anime-tickle.gif"),
+    poke: async (msg) => await actionEmbed(msg, "cutucou", "poke", "https://media1.tenor.com/m/y4YmP_P-2GMAAAAd/poke.gif"),
+    highfive: async (msg) => await actionEmbed(msg, "bateu as mãos (highfive) com", "highfive", "https://media1.tenor.com/m/bZl3zR0Z5RkAAAAd/anime-high-five.gif"),
+    stare: async (msg) => await actionEmbed(msg, "encarou fixamente", "stare", "https://media1.tenor.com/m/QnNnLh2ePbgAAAAd/stare.gif"),
+    cuddle: async (msg) => await actionEmbed(msg, "se aconchegou com", "cuddle", "https://media1.tenor.com/m/zG3R0uE-7kMAAAAd/anime-cuddle.gif"),
+    feed: async (msg) => await actionEmbed(msg, "deu comidinha para", "nom", "https://media1.tenor.com/m/vG4OtbO_OggAAAAd/anime-eat.gif"),
+    wave: async (msg) => await soloActionEmbed(msg, "acenou!", "wave", "https://media1.tenor.com/m/T4Jc3G_D2H8AAAAd/anime-wave.gif"),
+    dance: async (msg) => await soloActionEmbed(msg, "começou a dançar!", "dance", "https://media1.tenor.com/m/eU9yL30x-wQAAAAd/anime-dance.gif"),
+    cry: async (msg) => await soloActionEmbed(msg, "está chorando...", "cry", "https://media1.tenor.com/m/l1_Z_T2R1nUAAAAd/anime-cry.gif"),
+    laugh: async (msg) => await soloActionEmbed(msg, "está rindo à toa!", "laugh", "https://media1.tenor.com/m/kGfHhG1gN0AAAAAd/anime-smile.gif"),
+    blush: async (msg) => await soloActionEmbed(msg, "ficou com vergonha...", "blush", "https://media1.tenor.com/m/gC6VwP-4K9oAAAAd/anime-blush.gif"),
+    smug: async (msg) => await soloActionEmbed(msg, "está com um sorriso convencido.", "smug", "https://media1.tenor.com/m/eE9tF3o1_zYAAAAd/anime-smug.gif"),
+    pout: async (msg) => await soloActionEmbed(msg, "fez bico de irritação.", "pout", "https://media1.tenor.com/m/Z4ZpP3b-FfEAAAAd/anime-pout.gif"),
+    confused: async (msg) => await soloActionEmbed(msg, "está muito confuso...", "confused", "https://media1.tenor.com/m/T4F9M2t2vEAAAAAd/anime-confused.gif"),
+    angry: async (msg) => await soloActionEmbed(msg, "está furioso!", "angry", "https://media1.tenor.com/m/2uB2_A2e6U4AAAAd/anime-angry.gif"),
+    happy: async (msg) => await soloActionEmbed(msg, "está muito feliz!", "happy", "https://media1.tenor.com/m/R2TzP5G3wKMAAAAd/anime-happy.gif"),
+    sad: async (msg) => await soloActionEmbed(msg, "está triste...", "sad", "https://media1.tenor.com/m/l1_Z_T2R1nUAAAAd/anime-cry.gif"),
+    shocked: async (msg) => await soloActionEmbed(msg, "ficou em choque!", "shocked", "https://media1.tenor.com/m/V2J2D_X7pKwAAAAd/anime-cringe.gif"),
+    sleep: async (msg) => await soloActionEmbed(msg, "foi dormir...", "sleep", "https://media1.tenor.com/m/zG3u3m3f8L0AAAAd/anime-sleep.gif"),
+    bored: async (msg) => await soloActionEmbed(msg, "está morrendo de tédio...", "bored", "https://media1.tenor.com/m/Q4U5e3N6aOAAAAAd/anime-bored.gif"),
+    wink: async (msg) => await soloActionEmbed(msg, "piscou!", "wink", "https://media1.tenor.com/m/M4M_J7R8nUAAAAAd/anime-wink.gif"),
 
     // MINIGAMES, MEASURES & ZUEIRAS
     '8ball': (msg) => {
