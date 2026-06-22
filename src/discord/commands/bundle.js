@@ -195,7 +195,15 @@ const extraCommands = {
     gayrate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🏳️‍🌈 A taxa de viadagem de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
     simprate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🥺 A taxa de gado (simp) de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
     iq: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🧠 O QI de <@${u.id}> é **${Math.floor(Math.random() * 200) + 10}**!`); },
-    marry: async (msg) => { 
+    cornorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🐂 A taxa de corno de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**! 🤘`); },
+    gostosorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🥵 A taxa de gostosura de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
+    gadometro: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🐄 O gadômetro aponta que <@${u.id}> é **${Math.floor(Math.random() * 101)}%** gado(a)! Muuu!`); },
+    fedorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🤢 A taxa de fedor (cecê) de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**! Vai tomar banho!`); },
+    machorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`💪 A taxa de Macho Alfa (Sigma) de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**! 🍷🗿`); },
+    burrorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`🐴 A taxa de burrice de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**!`); },
+    feiorate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`👹 A taxa de feiura de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**! Melhor usar máscara.`); },
+    pobrerate: (msg) => { const u = msg.mentions.users.first() || msg.author; msg.reply(`💸 A taxa de pobreza de <@${u.id}> é **${Math.floor(Math.random() * 101)}%**! Hora de vender bolo de pote.`); },
+    marry: async (msg) => {
         const u = msg.mentions.users.first(); 
         if(!u) return msg.reply("Mencione alguém para casar!"); 
         if(u.id === msg.author.id) return msg.reply("Você não pode casar consigo mesmo!");
