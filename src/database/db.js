@@ -86,6 +86,13 @@ function addPoints(userId, amount) {
     } catch(e) { console.error("Erro ao adicionar pontos:", e); }
 }
 
+function removePoints(userId, amount) {
+    if (!db) return;
+    try {
+        db.prepare(`INSERT INTO users (user_id, points) VALUES (?, 0) ON CONFLICT(user_id) DO UPDATE SET points = MAX(0, points - ?)`).run(userId, amount);
+    } catch(e) { console.error("Erro ao remover pontos:", e); }
+}
+
 function getTopPlayers(limit = 10) {
     if (!db) return [];
     try {
@@ -108,6 +115,7 @@ module.exports = {
     initDatabase,
     getDB,
     addPoints,
+    removePoints,
     getTopPlayers,
     getUserPoints
 };
