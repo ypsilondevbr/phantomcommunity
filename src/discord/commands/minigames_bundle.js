@@ -150,18 +150,7 @@ const minigames = {
                 await i.update({ content: `*Click.* <@${i.user.id}> sobreviveu. Próximo! (${current}/6 espaços)`, components: [row] });
             }
         });
-    },
-
-    slots: async (msg) => {
-        const emojis = ['🍎', '🍒', '🍇', '🔔', '💎', '7️⃣'];
-        const r = () => emojis[Math.floor(Math.random() * emojis.length)];
-        const res = [r(), r(), r()];
-        const win = res[0] === res[1] && res[1] === res[2];
-        const m = await msg.reply("🎰 **Girando...**");
-        setTimeout(() => {
-            if(win) { addPoints(msg.author.id, 10); m.edit(`🎰 **SLOTS** 🎰\n[ ${res.join(' | ')} ]\n🎉 **JACKPOT! Você ganhou! (+10 pts)**`); }
-            else { removePoints(msg.author.id, 5); m.edit(`🎰 **SLOTS** 🎰\n[ ${res.join(' | ')} ]\n❌ **Você perdeu! (-5 pts)**`); }
-        }, 1500);
+    }, 1500);
     },
 
     fastclick: async (msg) => {
@@ -222,50 +211,6 @@ const minigames = {
         });
         col.on('end', () => {
             if(!won) { removePoints(msg.author.id, 5); msg.channel.send(`⏳ Tempo esgotado! O número era ${num}. (-5 pts)`); }
-        });
-    },
-
-    blackjack: async (msg) => {
-        let deck = [2,3,4,5,6,7,8,9,10,10,10,10,11];
-        const getCard = () => deck[Math.floor(Math.random()*deck.length)];
-        let pScore = getCard() + getCard();
-        let dScore = getCard();
-        let hiddenDScore = dScore + getCard();
-        
-        const row = new ActionRowBuilder().addComponents(createBtn('hit', 'Comprar 🃏', ButtonStyle.Primary), createBtn('stand', 'Parar 🛑', ButtonStyle.Danger));
-        const m = await msg.reply({ content: `🃏 **Blackjack**\nSua pontuação: **${pScore}**\nBanca mostra: **${dScore}**`, components: [row] });
-        const col = m.createMessageComponentCollector({ filter: i=>i.user.id===msg.author.id, time: 30000 });
-        
-        col.on('collect', async i => {
-            if(i.customId === 'hit') {
-                pScore += getCard();
-                if(pScore > 21) {
-                    removePoints(msg.author.id, 5);
-                    await i.update({ content: `💥 Estourou! Sua pontuação: **${pScore}**. Você **perdeu**! (-5 pts)`, components: [] });
-                    return col.stop();
-                } else {
-                    await i.update({ content: `🃏 **Blackjack**\nSua pontuação: **${pScore}**\nBanca mostra: **${dScore}**`, components: [row] });
-                }
-            } else {
-                while(hiddenDScore < 17) hiddenDScore += getCard();
-                let endMsg = `🃏 Sua pontuação: **${pScore}** | Banca final: **${hiddenDScore}**\n`;
-                if(hiddenDScore > 21 || pScore > hiddenDScore) {
-                    addPoints(msg.author.id, 10);
-                    endMsg += "🎉 **VOCÊ VENCEU A BANCA! (+10 pts)**";
-                } else if(hiddenDScore === pScore) endMsg += "🤝 **EMPATE!** Ninguém ganha nada.";
-                else {
-                    removePoints(msg.author.id, 5);
-                    endMsg += "❌ **VOCÊ PERDEU PARA A BANCA! (-5 pts)**";
-                }
-                await i.update({ content: endMsg, components: [] });
-                col.stop();
-            }
-        });
-        col.on('end', (collected, reason) => {
-            if(reason === 'time') {
-                removePoints(msg.author.id, 5);
-                m.edit({ content: `⏳ Tempo esgotado! O croupier levou suas fichas. (-5 pts)`, components: [] });
-            }
         });
     },
 
@@ -347,23 +292,7 @@ const minigames = {
         if(!u) return;
         if(Math.random() > 0.5) { addPoints(msg.author.id, 10); msg.reply(`🥷 Roubou <@${u.id}> com sucesso! (+10 pts)`); }
         else { removePoints(msg.author.id, 5); msg.reply(`🚓 Foi preso ao tentar roubar <@${u.id}>! (-5 pts)`); }
-    },
-
-    roulette: (msg) => {
-        const num = Math.floor(Math.random()*37);
-        if(num === 7) { addPoints(msg.author.id, 10); msg.reply(`🎰 Caiu no **7**. Jackpot! (+10 pts)`); }
-        else { removePoints(msg.author.id, 5); msg.reply(`🎰 Caiu no **${num}**. Perdeu. (-5 pts)`); }
-    },
-
-    horserace: async (msg) => {
-        let h1 = 0, h2 = 0;
-        const render = () => `🏇 **Corrida**\n🏁 ${'➖'.repeat(10-h1)}🐎 ${'➖'.repeat(h1)} (1)\n🏁 ${'➖'.repeat(10-h2)}🐎 ${'➖'.repeat(h2)} (2)`;
-        const m = await msg.reply(render());
-        const inter = setInterval(() => {
-            h1 += Math.floor(Math.random()*3); h2 += Math.floor(Math.random()*3);
-            if(h1>=10 || h2>=10) { clearInterval(inter); m.edit(render() + `\n🏆 **Cavalo ${h1>=10?1:2}** Venceu!`); }
-            else m.edit(render());
-        }, 1500);
+    }, 1500);
     },
 
     guessflag: async (msg) => {
@@ -417,21 +346,8 @@ const minigames = {
             if(s1>=5 || s2>=5) { clearInterval(inter); m.edit(render() + `\n🏆 **Caracol ${s1>=5?'A':'B'}** Venceu!`); }
             else m.edit(render());
         }, 2000);
-    },
-
-    baccarat: (msg) => {
-        let pb = Math.floor(Math.random()*9); let bb = Math.floor(Math.random()*9);
-        if(pb > bb) { addPoints(msg.author.id, 10); msg.reply(`🃏 **Baccarat**: Você tirou ${pb}, a Banca tirou ${bb}. **Você ganhou! (+10 pts)**`); }
+    }, a Banca tirou ${bb}. **Você ganhou! (+10 pts)**`); }
         else { removePoints(msg.author.id, 5); msg.reply(`🃏 **Baccarat**: Você tirou ${pb}, a Banca tirou ${bb}. Você perdeu. (-5 pts)`); }
-    },
-    colorbet: async (msg) => {
-        const row = new ActionRowBuilder().addComponents(createBtn('red', 'Vermelho', ButtonStyle.Danger), createBtn('blue', 'Azul', ButtonStyle.Primary));
-        const m = await msg.reply({ content: "Escolha uma cor!", components: [row] });
-        m.awaitMessageComponent({ filter: i=>i.user.id===msg.author.id, time: 10000 }).then(i => {
-            const w = Math.random()>0.5 ? 'red' : 'blue';
-            if(i.customId === w) { addPoints(msg.author.id, 10); i.update({ content: `🎨 Deu ${w==='red'?'Vermelho':'Azul'}! Você acertou! (+10 pts)`, components: [] }); }
-            else { removePoints(msg.author.id, 5); i.update({ content: `🎨 Deu ${w==='red'?'Vermelho':'Azul'}! Você errou. (-5 pts)`, components: [] }); }
-        }).catch(()=> { removePoints(msg.author.id, 5); m.edit({ content: `⏳ Tempo esgotado! (-5 pts)`, components: [] }); });
     },
     roshambo: async (msg) => {
         const row = new ActionRowBuilder().addComponents(createBtn('rock', 'Pedra 🪨', ButtonStyle.Secondary), createBtn('paper', 'Papel 📄', ButtonStyle.Secondary), createBtn('scissors', 'Tesoura ✂️', ButtonStyle.Secondary));
