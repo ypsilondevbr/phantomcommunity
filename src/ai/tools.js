@@ -3,49 +3,49 @@ const { logAI } = require('../core/logger');
 
 const geminiTools = [{
     functionDeclarations: [
-        { name: "clear_messages", description: "Apaga mensagens", parameters: { type: "OBJECT", properties: { amount: { type: "INTEGER", description: "Quantia" } }, required: ["amount"] } },
-        { name: "kick_member", description: "Expulsa usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id"] } },
-        { name: "ban_member", description: "Bane usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id"] } },
-        { name: "timeout_member", description: "Muta usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, minutes: { type: "INTEGER", description: "Minutos" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id", "minutes"] } },
-        { name: "create_text_channel", description: "Cria canal texto", parameters: { type: "OBJECT", properties: { name: { type: "STRING", description: "Nome" }, topic: { type: "STRING", description: "Tópico" } }, required: ["name"] } },
-        { name: "delete_channel", description: "Deleta canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING", description: "Nome/Menção do canal" } }, required: ["channel_name"] } },
-        { name: "send_announcement", description: "Envia Embed", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" } }, required: ["channel_name", "title", "description"] } },
-        { name: "create_role", description: "Cria cargo", parameters: { type: "OBJECT", properties: { name: { type: "STRING" }, color: { type: "STRING", description: "Hex" } }, required: ["name"] } },
-        { name: "delete_role", description: "Deleta cargo", parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome/ID" } }, required: ["role_name"] } },
-        { name: "edit_role", description: "Edita cargo", parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome/ID" }, new_name: { type: "STRING" }, new_color: { type: "STRING" } }, required: ["role_name"] } },
-        { name: "add_role_to_member", description: "Dá cargo", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, role_name: { type: "STRING" } }, required: ["user_id", "role_name"] } },
-        { name: "remove_role_from_member", description: "Tira cargo", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, role_name: { type: "STRING" } }, required: ["user_id", "role_name"] } },
-        { name: "create_category", description: "Cria categoria", parameters: { type: "OBJECT", properties: { name: { type: "STRING" } }, required: ["name"] } },
-        { name: "move_channel_to_category", description: "Move canal pra categoria", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, category_name: { type: "STRING" } }, required: ["channel_name", "category_name"] } },
-        { name: "lock_channel", description: "Tranca canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
-        { name: "unlock_channel", description: "Destranca canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
-        { name: "change_nickname", description: "Muda apelido", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, new_nickname: { type: "STRING" } }, required: ["user_id", "new_nickname"] } },
-        { name: "send_dm", description: "Envia DM", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, content: { type: "STRING" } }, required: ["user_id", "content"] } },
-        { name: "create_emoji", description: "Cria emoji", parameters: { type: "OBJECT", properties: { name: { type: "STRING" }, image_url: { type: "STRING" } }, required: ["name", "image_url"] } },
-        { name: "delete_emoji", description: "Deleta emoji", parameters: { type: "OBJECT", properties: { emoji_name: { type: "STRING" } }, required: ["emoji_name"] } },
-        { name: "change_server_name", description: "Muda nome sv", parameters: { type: "OBJECT", properties: { new_name: { type: "STRING" } }, required: ["new_name"] } },
-        { name: "create_invite", description: "Cria convite", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING", description: "Opcional" } }, required: [] } },
-        // NOVAS 20 FERRAMENTAS:
-        { name: "deafen_member", description: "Ensurdece membro na call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "undeafen_member", description: "Tira ensurdecimento", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "mute_member", description: "Muta microfone na call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "unmute_member", description: "Desmuta microfone", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "move_member", description: "Move membro pra outra call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, voice_channel_name: { type: "STRING" } }, required: ["user_id", "voice_channel_name"] } },
-        { name: "disconnect_member", description: "Derruba da call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "pin_message", description: "Fixa última mensagem", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: [] } },
-        { name: "unpin_message", description: "Desfixa última mensagem", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: [] } },
-        { name: "slowmode", description: "Ativa slowmode", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, seconds: { type: "INTEGER" } }, required: ["seconds"] } },
-        { name: "clear_channel", description: "Apaga tudo de um canal clonando", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
-        { name: "edit_channel_topic", description: "Edita topico do canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, new_topic: { type: "STRING" } }, required: ["channel_name", "new_topic"] } },
-        { name: "create_thread", description: "Cria thread (tópico)", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, name: { type: "STRING" } }, required: ["name"] } },
-        { name: "delete_thread", description: "Deleta thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
-        { name: "lock_thread", description: "Tranca thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
-        { name: "unlock_thread", description: "Destranca thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
-        { name: "untimeout_member", description: "Tira castigo antecipado", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "unban_member", description: "Desbane usuário (requer ID, não menção)", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
-        { name: "rename_category", description: "Renomeia categoria", parameters: { type: "OBJECT", properties: { category_name: { type: "STRING" }, new_name: { type: "STRING" } }, required: ["category_name", "new_name"] } },
-        { name: "delete_category", description: "Deleta categoria vazia", parameters: { type: "OBJECT", properties: { category_name: { type: "STRING" } }, required: ["category_name"] } },
-        { name: "giveaway_create", description: "Cria sorteio simples", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, prize: { type: "STRING" } }, required: ["channel_name", "prize"] } }
+        { name: "limpar_mensagens", description: "Apaga mensagens", parameters: { type: "OBJECT", properties: { amount: { type: "INTEGER", description: "Quantia" } }, required: ["amount"] } },
+        { name: "expulsar_membro", description: "Expulsa usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id"] } },
+        { name: "banir_membro", description: "Bane usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id"] } },
+        { name: "castigar_membro", description: "Muta usuário", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID/Menção" }, minutes: { type: "INTEGER", description: "Minutos" }, reason: { type: "STRING", description: "Motivo" } }, required: ["user_id", "minutes"] } },
+        { name: "criar_canal_texto", description: "Cria canal texto", parameters: { type: "OBJECT", properties: { name: { type: "STRING", description: "Nome" }, topic: { type: "STRING", description: "Tópico" } }, required: ["name"] } },
+        { name: "deletar_canal", description: "Deleta canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING", description: "Nome/Menção do canal" } }, required: ["channel_name"] } },
+        { name: "enviar_anuncio", description: "Envia Embed", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" } }, required: ["channel_name", "title", "description"] } },
+        { name: "criar_cargo", description: "Cria cargo", parameters: { type: "OBJECT", properties: { name: { type: "STRING" }, color: { type: "STRING", description: "Hex" } }, required: ["name"] } },
+        { name: "deletar_cargo", description: "Deleta cargo", parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome/ID" } }, required: ["role_name"] } },
+        { name: "editar_cargo", description: "Edita cargo", parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome/ID" }, new_name: { type: "STRING" }, new_color: { type: "STRING" } }, required: ["role_name"] } },
+        { name: "dar_cargo_membro", description: "Dá cargo", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, role_name: { type: "STRING" } }, required: ["user_id", "role_name"] } },
+        { name: "tirar_cargo_membro", description: "Tira cargo", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, role_name: { type: "STRING" } }, required: ["user_id", "role_name"] } },
+        { name: "criar_categoria", description: "Cria categoria", parameters: { type: "OBJECT", properties: { name: { type: "STRING" } }, required: ["name"] } },
+        { name: "mover_canal_categoria", description: "Move canal pra categoria", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, category_name: { type: "STRING" } }, required: ["channel_name", "category_name"] } },
+        { name: "trancar_canal", description: "Tranca canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
+        { name: "destrancar_canal", description: "Destranca canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
+        { name: "mudar_apelido", description: "Muda apelido", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, new_nickname: { type: "STRING" } }, required: ["user_id", "new_nickname"] } },
+        { name: "enviar_dm", description: "Envia DM", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, content: { type: "STRING" } }, required: ["user_id", "content"] } },
+        { name: "criar_emoji", description: "Cria emoji", parameters: { type: "OBJECT", properties: { name: { type: "STRING" }, image_url: { type: "STRING" } }, required: ["name", "image_url"] } },
+        { name: "deletar_emoji", description: "Deleta emoji", parameters: { type: "OBJECT", properties: { emoji_name: { type: "STRING" } }, required: ["emoji_name"] } },
+        { name: "mudar_nome_servidor", description: "Muda nome sv", parameters: { type: "OBJECT", properties: { new_name: { type: "STRING" } }, required: ["new_name"] } },
+        { name: "criar_convite", description: "Cria convite", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING", description: "Opcional" } }, required: [] } },
+        // NOVAS 20 FERRAMENTAS TRADUZIDAS:
+        { name: "ensurdecer_membro", description: "Ensurdece membro na call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "desensurdecer_membro", description: "Tira ensurdecimento", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "mutar_membro_call", description: "Muta microfone na call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "desmutar_membro_call", description: "Desmuta microfone", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "mover_membro_call", description: "Move membro pra outra call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" }, voice_channel_name: { type: "STRING" } }, required: ["user_id", "voice_channel_name"] } },
+        { name: "derrubar_membro_call", description: "Derruba da call", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "fixar_mensagem", description: "Fixa última mensagem", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: [] } },
+        { name: "desfixar_mensagem", description: "Desfixa última mensagem", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: [] } },
+        { name: "modo_lento", description: "Ativa slowmode", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, seconds: { type: "INTEGER" } }, required: ["seconds"] } },
+        { name: "limpar_canal_nuke", description: "Apaga tudo de um canal clonando", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" } }, required: ["channel_name"] } },
+        { name: "editar_topico_canal", description: "Edita topico do canal", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, new_topic: { type: "STRING" } }, required: ["channel_name", "new_topic"] } },
+        { name: "criar_topico_thread", description: "Cria thread (tópico)", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, name: { type: "STRING" } }, required: ["name"] } },
+        { name: "deletar_topico_thread", description: "Deleta thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
+        { name: "trancar_topico_thread", description: "Tranca thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
+        { name: "destrancar_topico_thread", description: "Destranca thread", parameters: { type: "OBJECT", properties: { thread_name: { type: "STRING" } }, required: ["thread_name"] } },
+        { name: "tirar_castigo_membro", description: "Tira castigo antecipado", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "desbanir_membro", description: "Desbane usuário (requer ID, não menção)", parameters: { type: "OBJECT", properties: { user_id: { type: "STRING" } }, required: ["user_id"] } },
+        { name: "renomear_categoria", description: "Renomeia categoria", parameters: { type: "OBJECT", properties: { category_name: { type: "STRING" }, new_name: { type: "STRING" } }, required: ["category_name", "new_name"] } },
+        { name: "deletar_categoria", description: "Deleta categoria vazia", parameters: { type: "OBJECT", properties: { category_name: { type: "STRING" } }, required: ["category_name"] } },
+        { name: "criar_sorteio", description: "Cria sorteio simples", parameters: { type: "OBJECT", properties: { channel_name: { type: "STRING" }, prize: { type: "STRING" } }, required: ["channel_name", "prize"] } }
     ]
 }];
 
@@ -74,54 +74,54 @@ async function executeTool(name, args, message) {
     };
 
     switch (name) {
-        case "clear_messages": {
+        case "limpar_mensagens": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) return "❌ Falha: Bot sem permissão de 'Gerenciar Mensagens'.";
             let amount = args.amount;
             if (amount < 1 || amount > 100) return "❌ Falha: Quantidade deve ser entre 1 e 100.";
             await message.channel.bulkDelete(amount, true).catch(() => {});
             return `✅ Ação executada: ${amount} mensagens apagadas.`;
         }
-        case "kick_member": {
+        case "expulsar_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.KickMembers)) return "❌ Falha: Sem permissão de Kick.";
             const member = await findMember(args.user_id);
             if (!member || !member.kickable) return "❌ Falha: Usuário não encontrado ou inatingível.";
             await member.kick(args.reason || "Decisão da IA");
             return `✅ Ação executada: Usuário expulso.`;
         }
-        case "ban_member": {
+        case "banir_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.BanMembers)) return "❌ Falha: Sem permissão de Ban.";
             const member = await findMember(args.user_id);
             if (!member || !member.bannable) return "❌ Falha: Usuário não encontrado ou inatingível.";
             await member.ban({ reason: args.reason || "Decisão da IA" });
             return `✅ Ação executada: Usuário banido.`;
         }
-        case "timeout_member": {
+        case "castigar_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ModerateMembers)) return "❌ Falha: Sem permissão de Timeout.";
             const member = await findMember(args.user_id);
             if (!member) return "❌ Falha: Usuário não encontrado.";
             await member.timeout(args.minutes * 60 * 1000, args.reason || "Decisão da IA");
             return `✅ Ação executada: Usuário mutado.`;
         }
-        case "create_text_channel": {
+        case "criar_canal_texto": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             const channel = await guild.channels.create({ name: args.name, type: 0, topic: args.topic || "" });
             return `✅ Ação executada: Canal <#${channel.id}> criado.`;
         }
-        case "delete_channel": {
+        case "deletar_canal": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha: Canal não encontrado.";
             await channel.delete();
             return `✅ Ação executada: Canal deletado.`;
         }
-        case "send_announcement": {
+        case "enviar_anuncio": {
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha: Canal não encontrado.";
             const embed = new EmbedBuilder().setTitle(args.title).setDescription(args.description).setColor(0x00FF00);
             await channel.send({ embeds: [embed] });
             return `✅ Ação executada: Anúncio enviado.`;
         }
-        case "create_role": {
+        case "criar_cargo": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
             let opts = { name: args.name };
             if (args.color) opts.color = args.color;
@@ -129,7 +129,7 @@ async function executeTool(name, args, message) {
             if (!role) return "❌ Falha ao criar cargo.";
             return `✅ Ação executada: Cargo '${role.name}' criado.`;
         }
-        case "delete_role": {
+        case "deletar_cargo": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
             const roleName = args.role_name.replace(/<@&|>/g, '');
             let role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase() || r.id === roleName);
@@ -137,7 +137,7 @@ async function executeTool(name, args, message) {
             await role.delete();
             return `✅ Ação executada: Cargo deletado.`;
         }
-        case "edit_role": {
+        case "editar_cargo": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
             const roleName = args.role_name.replace(/<@&|>/g, '');
             let role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase() || r.id === roleName);
@@ -148,7 +148,7 @@ async function executeTool(name, args, message) {
             await role.edit(updates).catch(()=>null);
             return `✅ Ação executada: Cargo editado.`;
         }
-        case "add_role_to_member": {
+        case "dar_cargo_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
             const member = await findMember(args.user_id);
             let role = guild.roles.cache.find(r => r.name.toLowerCase() === args.role_name.toLowerCase() || r.id === args.role_name.replace(/<@&|>/g, ''));
@@ -156,7 +156,7 @@ async function executeTool(name, args, message) {
             await member.roles.add(role);
             return `✅ Ação executada: Cargo adicionado.`;
         }
-        case "remove_role_from_member": {
+        case "tirar_cargo_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
             const member = await findMember(args.user_id);
             let role = guild.roles.cache.find(r => r.name.toLowerCase() === args.role_name.toLowerCase() || r.id === args.role_name.replace(/<@&|>/g, ''));
@@ -164,12 +164,12 @@ async function executeTool(name, args, message) {
             await member.roles.remove(role);
             return `✅ Ação executada: Cargo removido.`;
         }
-        case "create_category": {
+        case "criar_categoria": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             const cat = await guild.channels.create({ name: args.name, type: 4 });
             return `✅ Ação executada: Categoria criada.`;
         }
-        case "move_channel_to_category": {
+        case "mover_canal_categoria": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             let channel = findChannel(args.channel_name);
             let category = guild.channels.cache.find(c => c.type === 4 && c.name.toLowerCase() === args.category_name.toLowerCase());
@@ -177,21 +177,21 @@ async function executeTool(name, args, message) {
             await channel.setParent(category.id);
             return `✅ Ação executada: Canal movido.`;
         }
-        case "lock_channel": {
+        case "trancar_canal": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             await channel.permissionOverwrites.edit(guild.id, { SendMessages: false });
             return `✅ Ação executada: Canal trancado.`;
         }
-        case "unlock_channel": {
+        case "destrancar_canal": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha: Sem permissão.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             await channel.permissionOverwrites.edit(guild.id, { SendMessages: null });
             return `✅ Ação executada: Canal destrancado.`;
         }
-        case "change_nickname": {
+        case "mudar_apelido": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageNicknames)) return "❌ Falha: Sem permissão.";
             const member = await findMember(args.user_id);
             if (!member || member.roles.highest.position >= botMember.roles.highest.position) return "❌ Falha.";
@@ -199,31 +199,31 @@ async function executeTool(name, args, message) {
             await member.setNickname(newNick);
             return `✅ Ação executada: Apelido alterado.`;
         }
-        case "send_dm": {
+        case "enviar_dm": {
             const member = await findMember(args.user_id);
             if (!member) return "❌ Falha.";
             await member.send(args.content).catch(() => { return "❌ Falha (DM trancada)."; });
             return `✅ Ação executada: DM enviada.`;
         }
-        case "create_emoji": {
+        case "criar_emoji": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageGuildExpressions)) return "❌ Falha.";
             const emoji = await guild.emojis.create({ attachment: args.image_url, name: args.name }).catch(()=>null);
             if (!emoji) return "❌ Falha.";
             return `✅ Ação executada: Emoji criado.`;
         }
-        case "delete_emoji": {
+        case "deletar_emoji": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageGuildExpressions)) return "❌ Falha.";
             const emoji = guild.emojis.cache.find(e => e.name === args.emoji_name || e.id === args.emoji_name);
             if (!emoji) return "❌ Falha.";
             await emoji.delete();
             return `✅ Ação executada: Emoji deletado.`;
         }
-        case "change_server_name": {
+        case "mudar_nome_servidor": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageGuild)) return "❌ Falha.";
             await guild.setName(args.new_name);
             return `✅ Ação executada: Servidor renomeado.`;
         }
-        case "create_invite": {
+        case "criar_convite": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.CreateInstantInvite)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
@@ -231,36 +231,36 @@ async function executeTool(name, args, message) {
             return `✅ Ação executada: Link gerado: ${invite.url}`;
         }
         
-        // 20 NOVIDADES:
-        case "deafen_member": {
+        // 20 NOVIDADES TRADUZIDAS:
+        case "ensurdecer_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.DeafenMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha (não está na call).";
             await member.voice.setDeaf(true);
             return "✅ Ação executada: Usuário ensurdecido.";
         }
-        case "undeafen_member": {
+        case "desensurdecer_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.DeafenMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha (não está na call).";
             await member.voice.setDeaf(false);
             return "✅ Ação executada: Usuário não está mais ensurdecido.";
         }
-        case "mute_member": {
+        case "mutar_membro_call": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.MuteMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha (não está na call).";
             await member.voice.setMute(true);
-            return "✅ Ação executada: Usuário mutado.";
+            return "✅ Ação executada: Usuário mutado na call.";
         }
-        case "unmute_member": {
+        case "desmutar_membro_call": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.MuteMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha (não está na call).";
             await member.voice.setMute(false);
-            return "✅ Ação executada: Usuário desmutado.";
+            return "✅ Ação executada: Usuário desmutado na call.";
         }
-        case "move_member": {
+        case "mover_membro_call": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.MoveMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha.";
@@ -269,14 +269,14 @@ async function executeTool(name, args, message) {
             await member.voice.setChannel(channel);
             return "✅ Ação executada: Usuário movido.";
         }
-        case "disconnect_member": {
+        case "derrubar_membro_call": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.MoveMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member || !member.voice.channel) return "❌ Falha.";
             await member.voice.disconnect();
             return "✅ Ação executada: Usuário derrubado da call.";
         }
-        case "pin_message": {
+        case "fixar_mensagem": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
@@ -285,7 +285,7 @@ async function executeTool(name, args, message) {
             if (msg) await msg.pin();
             return "✅ Ação executada: Mensagem fixada.";
         }
-        case "unpin_message": {
+        case "desfixar_mensagem": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageMessages)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
@@ -294,14 +294,14 @@ async function executeTool(name, args, message) {
             if (msg) await msg.unpin();
             return "✅ Ação executada: Mensagem desfixada.";
         }
-        case "slowmode": {
+        case "modo_lento": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             await channel.setRateLimitPerUser(args.seconds);
             return `✅ Ação executada: Slowmode setado para ${args.seconds}s.`;
         }
-        case "clear_channel": {
+        case "limpar_canal_nuke": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
@@ -311,68 +311,68 @@ async function executeTool(name, args, message) {
             await newChannel.setPosition(pos);
             return `✅ Ação executada: Canal 'Nuked'.`;
         }
-        case "edit_channel_topic": {
+        case "editar_topico_canal": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             await channel.setTopic(args.new_topic);
             return `✅ Ação executada: Tópico editado.`;
         }
-        case "create_thread": {
+        case "criar_topico_thread": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.CreatePublicThreads)) return "❌ Falha.";
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             await channel.threads.create({ name: args.name, autoArchiveDuration: 60 });
             return `✅ Ação executada: Thread criada.`;
         }
-        case "delete_thread": {
+        case "deletar_topico_thread": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageThreads)) return "❌ Falha.";
             let thread = guild.channels.cache.find(c => c.isThread() && c.name.toLowerCase() === args.thread_name.toLowerCase());
             if (!thread) return "❌ Falha.";
             await thread.delete();
             return `✅ Ação executada: Thread deletada.`;
         }
-        case "lock_thread": {
+        case "trancar_topico_thread": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageThreads)) return "❌ Falha.";
             let thread = guild.channels.cache.find(c => c.isThread() && c.name.toLowerCase() === args.thread_name.toLowerCase());
             if (!thread) return "❌ Falha.";
             await thread.setLocked(true);
             return `✅ Ação executada: Thread trancada.`;
         }
-        case "unlock_thread": {
+        case "destrancar_topico_thread": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageThreads)) return "❌ Falha.";
             let thread = guild.channels.cache.find(c => c.isThread() && c.name.toLowerCase() === args.thread_name.toLowerCase());
             if (!thread) return "❌ Falha.";
             await thread.setLocked(false);
             return `✅ Ação executada: Thread destrancada.`;
         }
-        case "untimeout_member": {
+        case "tirar_castigo_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ModerateMembers)) return "❌ Falha.";
             const member = await findMember(args.user_id);
             if (!member) return "❌ Falha.";
             await member.timeout(null);
             return `✅ Ação executada: Castigo removido.`;
         }
-        case "unban_member": {
+        case "desbanir_membro": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.BanMembers)) return "❌ Falha.";
             await guild.members.unban(args.user_id).catch(() => null);
             return `✅ Ação executada: Usuário desbanido.`;
         }
-        case "rename_category": {
+        case "renomear_categoria": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha.";
             let category = guild.channels.cache.find(c => c.type === 4 && c.name.toLowerCase() === args.category_name.toLowerCase());
             if (!category) return "❌ Falha.";
             await category.setName(args.new_name);
             return `✅ Ação executada: Categoria renomeada.`;
         }
-        case "delete_category": {
+        case "deletar_categoria": {
             if (!botMember.permissions.has(PermissionsBitField.Flags.ManageChannels)) return "❌ Falha.";
             let category = guild.channels.cache.find(c => c.type === 4 && c.name.toLowerCase() === args.category_name.toLowerCase());
             if (!category) return "❌ Falha.";
             await category.delete();
             return `✅ Ação executada: Categoria deletada.`;
         }
-        case "giveaway_create": {
+        case "criar_sorteio": {
             let channel = findChannel(args.channel_name);
             if (!channel) return "❌ Falha.";
             const embed = new EmbedBuilder().setTitle("🎉 SORTEIO!").setDescription(`Prêmio: **${args.prize}**\nReaja para participar!`).setColor(0xFF00FF);
