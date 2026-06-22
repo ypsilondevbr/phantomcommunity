@@ -49,6 +49,11 @@ const geminiTools = [{
             parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome exato ou ID do cargo" } }, required: ["role_name"] }
         },
         {
+            name: "edit_role",
+            description: "Edita um cargo existente (muda nome, adiciona emoji ou altera cor).",
+            parameters: { type: "OBJECT", properties: { role_name: { type: "STRING", description: "Nome exato ou ID do cargo" }, new_name: { type: "STRING", description: "Novo nome do cargo (inclua emojis aqui se desejar)" }, new_color: { type: "STRING", description: "Nova cor Hexadecimal (ex: #FF0000)" } }, required: ["role_name"] }
+        },
+        {
             name: "add_role_to_member",
             description: "Adiciona um cargo a um usuário.",
             parameters: { type: "OBJECT", properties: { user_id: { type: "STRING", description: "ID ou menção do usuário" }, role_name: { type: "STRING", description: "Nome exato ou ID do cargo" } }, required: ["user_id", "role_name"] }
@@ -204,6 +209,21 @@ async function executeTool(name, args, message) {
             if (!role || role.position >= botMember.roles.highest.position) return "❌ Falha: Cargo não encontrado ou muito alto.";
             await role.delete();
             return `✅ Ação executada: Cargo deletado.`;
+        }
+
+        case "edit_role": {
+            if (!botMember.permissions.has(PermissionsBitField.Flags.ManageRoles)) return "❌ Falha: Sem permissão.";
+            const roleName = args.role_name.replace(/<@&|>/g, '');
+            let role = guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase() || r.id === roleName);
+            if (!role || role.position >= botMember.roles.highest.position) return "❌ Falha: Cargo não encontrado ou muito alto.";
+            
+            let updates = {};
+            if (args.new_name) updates.name = args.new_name;
+            if (args.new_color) updates.color = args.new_color;
+            if (Object.keys(updates).length === 0) return "❌ Falha: Nenhuma alteração fornecida.";
+            
+            await role.edit(updates).catch(()=>null);
+            return `✅ Ação executada: Cargo editado para '${role.name}'.`;
         }
 
         case "add_role_to_member": {
