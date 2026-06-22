@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { addPoints } = require('../../database/db');
+const { addPoints } = require('../../../database/db');
 
 module.exports = {
     name: 'addpoints',
