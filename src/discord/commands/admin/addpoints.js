@@ -8,6 +8,10 @@ module.exports = {
         const target = message.mentions.users.first();
         const amount = parseInt(args[1]);
 
+        if (message.author.id !== message.guild.ownerId) {
+            return message.reply("❌ **Acesso Negado.** Apenas o **Dono** do servidor pode usar este comando.");
+        }
+
         if (!target) {
             return message.reply("❌ Mencione o usuário que receberá os pontos. Ex: `.phantom addpoints @user 500`");
         }
